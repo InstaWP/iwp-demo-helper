@@ -39,6 +39,8 @@ function iwp_migration_add_submenu_page() {
 		'iwp_migrate_content',             // menu_slug
 		'iwp_migration_display_content'    // callback function
 	);
+
+	remove_menu_page( 'iwp_migration' );
 }
 
 add_action( 'admin_menu', 'iwp_migration_add_submenu_page' );
@@ -98,7 +100,7 @@ function iwp_migration_display_content_thankyou() {
             <div style="margin-top: 10px; margin-bottom: 25px" id="iwp_migration_content">
                 <img src="">
                 <div class="iwp-response-message">
-	                <?php echo wp_kses_post( get_option( 'thankyou_text' ) ); ?>
+					<?php echo wp_kses_post( get_option( 'thankyou_text' ) ); ?>
                 </div>
             </div>
 
@@ -211,21 +213,28 @@ function iwp_migration_styles() {
 add_action( 'wp_head', 'iwp_migration_styles' );
 add_action( 'admin_head', 'iwp_migration_styles' );
 
+/**
+ * Load JS
+ */
 add_action( 'admin_enqueue_scripts', function () {
 	wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'assets/js/scripts.js', array( 'jquery' ) );
 	wp_localize_script( 'iwp-migration', 'iwp_migration', array( 'ajax_url' => admin_url( 'admin-ajax.php' ), ) );
 } );
 
+
+/**
+ * Handle ajax call
+ */
 add_action( 'wp_ajax_iwp_migration_initiate', function () {
 
 	$iwp_api_key    = get_option( 'iwp_api_key' );
 	$iwp_api_domain = 'https://stage.instawp.io/';
 	$body_args      = array(
-		'url'            => 'https://testy-tiger-hqh1w.a.instawpsites.com',
-		'email'          => 'jaedm97@gmail.com',
-		'customer_email' => 'jaedm98@gmail.com',
-		'subject'        => 'demo {{site_url}} subject site',
-		'body'           => 'url is {{site_url}} demo demo demo email is {{customer_email}}'
+		'url'            => site_url(),
+		'email'          => get_option( 'iwp_support_email' ),
+		'customer_email' => get_option( 'admin_email' ),
+		'subject'        => get_option( 'iwp_email_subject' ),
+		'body'           => get_option( 'iwp_email_body' ),
 	);
 	$headers        = array(
 		'Accept'        => 'application/json',
@@ -252,3 +261,18 @@ add_action( 'wp_ajax_iwp_migration_initiate', function () {
 
 	wp_send_json_success( $response_body );
 } );
+
+
+/**
+ * Remove this plugin from plugins list
+ */
+add_filter( 'all_plugins', function ( $all_plugins ) {
+	$plugin_to_remove = 'iwp-migration/iwp-migration.php';
+
+	if ( array_key_exists( $plugin_to_remove, $all_plugins ) ) {
+		unset( $all_plugins[ $plugin_to_remove ] );
+	}
+
+	return $all_plugins;
+} );
+

@@ -24,6 +24,7 @@ function iwp_migration_settings_page() {
 // Register settings
 function iwp_migration_register_settings() {
 	register_setting( 'iwp_migration_settings_group', 'iwp_api_key' );
+	register_setting( 'iwp_migration_settings_group', 'iwp_support_email' );
 	register_setting( 'iwp_migration_settings_group', 'logo_url' );
 	register_setting( 'iwp_migration_settings_group', 'content' );
 	register_setting( 'iwp_migration_settings_group', 'title_text' );
@@ -34,10 +35,13 @@ function iwp_migration_register_settings() {
 	register_setting( 'iwp_migration_settings_group', 'background_color' );
 	register_setting( 'iwp_migration_settings_group', 'top_bar_text' );
 	register_setting( 'iwp_migration_settings_group', 'thankyou_text' );
+	register_setting( 'iwp_migration_settings_group', 'iwp_email_subject' );
+	register_setting( 'iwp_migration_settings_group', 'iwp_email_body' );
 
 	add_settings_section( 'iwp_migration_main_section', 'Main Settings', null, 'iwp_migration' );
 
 	add_settings_field( 'iwp_api_key', 'API Key', 'iwp_migration_iwp_api_key_callback', 'iwp_migration', 'iwp_migration_main_section' );
+	add_settings_field( 'iwp_support_email', 'Support Email', 'iwp_migration_iwp_support_email_callback', 'iwp_migration', 'iwp_migration_main_section' );
 	add_settings_field( 'logo-url', 'Logo URL', 'iwp_migration_logo_url_callback', 'iwp_migration', 'iwp_migration_main_section' );
 	add_settings_field( 'content', 'Content', 'iwp_migration_content_callback', 'iwp_migration', 'iwp_migration_main_section' );
 	add_settings_field( 'title', 'Title', 'iwp_migration_title_text_callback', 'iwp_migration', 'iwp_migration_main_section' );
@@ -49,16 +53,30 @@ function iwp_migration_register_settings() {
 	add_settings_field( 'top-bar-text', 'Top Bar Text', 'iwp_migration_top_bar_text_callback', 'iwp_migration', 'iwp_migration_main_section' );
 	add_settings_field( 'thankyou-text', 'Thank You Text', 'iwp_migration_thankyou_text_callback', 'iwp_migration', 'iwp_migration_main_section' );
 
+	add_settings_field( 'iwp_email_subject', 'Email Subject', 'iwp_migration_iwp_email_subject_callback', 'iwp_migration', 'iwp_migration_main_section' );
+	add_settings_field( 'iwp_email_body', 'Email Body', 'iwp_migration_iwp_email_body_callback', 'iwp_migration', 'iwp_migration_main_section' );
 }
 
 add_action( 'admin_init', 'iwp_migration_register_settings' );
+
+function iwp_migration_iwp_email_body_callback() {
+	echo '<textarea rows="10" cols="80" type="email" placeholder="This site - {{site_url}} of {{customer_email}} migrated." name="iwp_email_body">' . esc_attr( get_option( 'iwp_email_body' ) ) . '</textarea>';
+}
+
+function iwp_migration_iwp_email_subject_callback() {
+	echo '<input type="text" style="width: 380px;" placeholder="Migration started for {{site_url}}" name="iwp_email_subject" value="' . esc_attr( get_option( 'iwp_email_subject' ) ) . '" />';
+}
+
+function iwp_migration_iwp_support_email_callback() {
+	echo '<input type="email" style="width: 380px;" placeholder="support@mysite.com" name="iwp_support_email" value="' . esc_attr( get_option( 'iwp_support_email' ) ) . '" />';
+}
 
 function iwp_migration_iwp_api_key_callback() {
 	echo '<input type="text" style="width: 380px;" placeholder="znrVYIay67kWo56SXNoqe5ScJU9bBBscxOzh15ucN" name="iwp_api_key" value="' . esc_attr( get_option( 'iwp_api_key' ) ) . '" />';
 }
 
 function iwp_migration_logo_url_callback() {
-	echo '<input type="text" name="logo_url" value="' . esc_attr( get_option( 'logo_url' ) ) . '" />';
+	echo '<input type="text" style="width: 380px;" name="logo_url" value="' . esc_attr( get_option( 'logo_url' ) ) . '" />';
 }
 
 function iwp_migration_content_callback() {
@@ -78,7 +96,7 @@ function iwp_migration_content_callback() {
 }
 
 function iwp_migration_title_text_callback() {
-	echo '<input type="text" name="title_text" value="' . esc_attr( get_option( 'title_text' ) ) . '" />';
+	echo '<input type="text" style="width: 380px;" name="title_text" value="' . esc_attr( get_option( 'title_text' ) ) . '" />';
 }
 
 
@@ -115,7 +133,7 @@ function iwp_migration_thankyou_text_callback() {
 }
 
 function iwp_migration_cta_button_text_callback() {
-	echo '<input type="text" name="cta_button_text" value="' . esc_attr( get_option( 'cta_button_text' ) ) . '" />';
+	echo '<input type="text" style="width: 380px;" name="cta_button_text" value="' . esc_attr( get_option( 'cta_button_text' ) ) . '" />';
 }
 
 function iwp_migration_brand_color_callback() {
@@ -131,5 +149,5 @@ function iwp_migration_background_color_callback() {
 }
 
 function iwp_migration_top_bar_text_callback() {
-	echo '<input type="text" name="top_bar_text" value="' . esc_attr( get_option( 'top_bar_text' ) ) . '" />';
+	echo '<input type="text" style="width: 380px;" name="top_bar_text" value="' . esc_attr( get_option( 'top_bar_text' ) ) . '" />';
 }
