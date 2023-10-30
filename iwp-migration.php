@@ -7,115 +7,122 @@ Author: InstaWP
 */
 
 // Admin settings
-include(plugin_dir_path(__FILE__) . 'admin_settings.php');
+include( plugin_dir_path( __FILE__ ) . 'admin_settings.php' );
 
 // Adding button to the top bar
-function iwp_migration_button($wp_admin_bar) {
-	
-	$top_bar_text = get_option('top_bar_text');
+function iwp_migration_button( $wp_admin_bar ) {
+
+	$top_bar_text = get_option( 'top_bar_text' );
 
 	// add a button to the top admin bar with color, text and background
 	$args = array(
-		'id' => 'iwp_migration_btn',
-		'title' => esc_attr(get_option('top_bar_text', 'Migrate')),
-		'href'  => admin_url('admin.php?page=iwp_migrate_content'),
-		'meta' => array(
+		'id'    => 'iwp_migration_btn',
+		'title' => esc_attr( get_option( 'top_bar_text', 'Migrate' ) ),
+		'href'  => admin_url( 'admin.php?page=iwp_migrate_content' ),
+		'meta'  => array(
 			'class' => 'menupop iwp_migration_class',
-			
+
 		)
 	);
 
-	$wp_admin_bar->add_node($args);
+	$wp_admin_bar->add_node( $args );
 }
-add_action('admin_bar_menu', 'iwp_migration_button', 999);
+
+add_action( 'admin_bar_menu', 'iwp_migration_button', 999 );
 
 function iwp_migration_add_submenu_page() {
-    add_submenu_page(
-        'iwp_migration_settings',          // parent_slug: It should be the same slug used for your main settings page.
-        'IWP Migrate Content',             // page_title
-        'Migrate Content',                 // menu_title
-        'manage_options',                  // capability: Only users with this capability can access the page.
-        'iwp_migrate_content',             // menu_slug
-        'iwp_migration_display_content'    // callback function
-    );
+	add_submenu_page(
+		'iwp_migration_settings',          // parent_slug: It should be the same slug used for your main settings page.
+		'IWP Migrate Content',             // page_title
+		'Migrate Content',                 // menu_title
+		'manage_options',                  // capability: Only users with this capability can access the page.
+		'iwp_migrate_content',             // menu_slug
+		'iwp_migration_display_content'    // callback function
+	);
 }
-add_action('admin_menu', 'iwp_migration_add_submenu_page');
+
+add_action( 'admin_menu', 'iwp_migration_add_submenu_page' );
 
 function iwp_migration_display_content() {
-    ?>
-    <div class="iwp_migration_container">
-		<div class="iwp_migration_title"> 
-		    <img src="<?php echo esc_attr(get_option('logo_url')); ?>" style="max-width: 150px;" alt="Logo" />
-            <h1><?php echo esc_attr(get_option('title_text')); ?></h1>
+	?>
+    <div class="iwp_migration_container iwp-migration-screen-1">
+
+        <div class="iwp_migration_title">
+            <img src="<?php echo esc_attr( get_option( 'logo_url' ) ); ?>" style="max-width: 150px;" alt="Logo"/>
+            <h1><?php echo esc_attr( get_option( 'title_text' ) ); ?></h1>
         </div>
-        <!--<?php echo esc_attr(get_option('background_color')); ?>;-->
+
+        <!--<?php echo esc_attr( get_option( 'background_color' ) ); ?>;-->
         <div style="background-color: #F9FAFB; padding: 20px ; align-items: center; " class="iwp_migration_content">
-            
-            <div style="margin-top: 10px; margin-bottom: 25px" id="iwp_migration_content"> 
-                <?php echo wp_kses_post(get_option('content')); ?> 
+            <div style="margin-top: 10px; margin-bottom: 25px" id="iwp_migration_content">
+				<?php echo wp_kses_post( get_option( 'content' ) ); ?>
             </div>
-            
-            <button style="background-color:<?php echo esc_attr(get_option('brand_color')); ?>; color:<?php echo esc_attr(get_option('button_text_color')); ?>;" class="iwp_btn_primary">
-                <?php echo esc_attr(get_option('cta_button_text')); ?>
+
+            <button style="background-color:<?php echo esc_attr( get_option( 'brand_color' ) ); ?>; color:<?php echo esc_attr( get_option( 'button_text_color' ) ); ?>;" class="iwp_btn_primary iwp-btn-main">
+				<?php echo esc_attr( get_option( 'cta_button_text' ) ); ?>
             </button>
-			<div class="iwp_migration_footer">
-                <?php echo wp_kses_post(get_option('footer_text')); ?>
+            <div class="iwp_migration_footer">
+				<?php echo wp_kses_post( get_option( 'footer_text' ) ); ?>
             </div>
         </div>
+
     </div>
-    <?php
+	<?php
 }
 
 // Thank you page.
 
 function iwp_migration_add_submenu_page_thankyou() {
-    add_submenu_page(
-        'iwp_migration_settings',          // parent_slug: It should be the same slug used for your main settings page.
-        'IWP Migrate Thank you',             // page_title
-        'Migrate Thank you',                 // menu_title
-        'manage_options',                  // capability: Only users with this capability can access the page.
-        'iwp_migrate_content',             // menu_slug
-        'iwp_migration_display_content_thankyou'    // callback function
-    );
+	add_submenu_page(
+		'iwp_migration_settings',          // parent_slug: It should be the same slug used for your main settings page.
+		'IWP Migrate Thank you',             // page_title
+		'Migrate Thank you',                 // menu_title
+		'manage_options',                  // capability: Only users with this capability can access the page.
+		'iwp_migrate_content',             // menu_slug
+		'iwp_migration_display_content_thankyou'    // callback function
+	);
 }
-add_action('admin_menu', 'iwp_migration_add_submenu_page_thankyou');
+
+add_action( 'admin_menu', 'iwp_migration_add_submenu_page_thankyou' );
 
 function iwp_migration_display_content_thankyou() {
-    ?>
-    <div class="iwp_migration_container">
-		<div class="iwp_migration_title"> 
-		    <img src="<?php echo esc_attr(get_option('logo_url')); ?>" style="max-width: 150px;" alt="Logo" />
-            <h1><?php echo esc_attr(get_option('title_text')); ?></h1>
+	?>
+    <div class="iwp_migration_container iwp-migration-screen-2">
+        <div class="iwp_migration_title">
+            <img src="<?php echo esc_attr( get_option( 'logo_url' ) ); ?>" style="max-width: 150px;" alt="Logo"/>
+            <h1><?php echo esc_attr( get_option( 'title_text' ) ); ?></h1>
         </div>
-        <!--<?php echo esc_attr(get_option('background_color')); ?>;-->
-        <div style="background-color: #F9FAFB; padding: 20px ; align-items: center; " class="iwp_migration_content">
-            
-            <div style="margin-top: 10px; margin-bottom: 25px" id="iwp_migration_content"> 
+        <!--<?php echo esc_attr( get_option( 'background_color' ) ); ?>;-->
+        <div style="width: 100%;background-color: #F9FAFB;text-align: center;padding: 20px 0;" class="iwp_migration_content">
+
+            <div style="margin-top: 10px; margin-bottom: 25px" id="iwp_migration_content">
                 <img src="">
-                <?php echo wp_kses_post(get_option('thankyou_text')); ?> 
+                <div class="iwp-response-message">
+	                <?php echo wp_kses_post( get_option( 'thankyou_text' ) ); ?>
+                </div>
             </div>
-            
-            <button style="background-color:<?php echo esc_attr(get_option('brand_color')); ?>; color:<?php echo esc_attr(get_option('button_text_color')); ?>;" class="iwp_btn_primary">
+
+            <button style="background-color:<?php echo esc_attr( get_option( 'brand_color' ) ); ?>; color:<?php echo esc_attr( get_option( 'button_text_color' ) ); ?>;" class="iwp_btn_primary iwp-button-close">
                 Close
             </button>
-			
+
         </div>
     </div>
-    <?php
+	<?php
 }
 
 
 // Add styles for the button
 function iwp_migration_styles() {
-	$brand_color = get_option('brand_color');
-	$button_text_color = get_option('button_text_color');
+	$brand_color       = get_option( 'brand_color' );
+	$button_text_color = get_option( 'button_text_color' );
 
 	echo "<style type=\"text/css\">
 
         button {
             border: none;
         }
-
+        
         .iwp_migration_class {
             background-color: $brand_color !important; 
 			color: $button_text_color; 
@@ -193,8 +200,55 @@ function iwp_migration_styles() {
             margin-top: 25px;
             margin-bottom: 10px;
         }
+        
+        .iwp-migration-screen-2 {
+              display: none;
+        }
 
     </style>";
 }
-add_action('wp_head', 'iwp_migration_styles');
-add_action('admin_head', 'iwp_migration_styles');
+
+add_action( 'wp_head', 'iwp_migration_styles' );
+add_action( 'admin_head', 'iwp_migration_styles' );
+
+add_action( 'admin_enqueue_scripts', function () {
+	wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'assets/js/scripts.js', array( 'jquery' ) );
+	wp_localize_script( 'iwp-migration', 'iwp_migration', array( 'ajax_url' => admin_url( 'admin-ajax.php' ), ) );
+} );
+
+add_action( 'wp_ajax_iwp_migration_initiate', function () {
+
+	$iwp_api_key    = get_option( 'iwp_api_key' );
+	$iwp_api_domain = 'https://stage.instawp.io/';
+	$body_args      = array(
+		'url'            => 'https://testy-tiger-hqh1w.a.instawpsites.com',
+		'email'          => 'jaedm97@gmail.com',
+		'customer_email' => 'jaedm98@gmail.com',
+		'subject'        => 'demo {{site_url}} subject site',
+		'body'           => 'url is {{site_url}} demo demo demo email is {{customer_email}}'
+	);
+	$headers        = array(
+		'Accept'        => 'application/json',
+		'Content-Type'  => 'application/json',
+		'Authorization' => 'Bearer ' . $iwp_api_key,
+	);
+	$args           = array(
+		'headers'     => $headers,
+		'body'        => json_encode( $body_args ),
+		'method'      => 'POST',
+		'data_format' => 'body'
+	);
+	$response       = wp_remote_post( $iwp_api_domain . 'api/v2/migrate-request', $args );
+
+	if ( is_wp_error( $response ) ) {
+		wp_send_json_error( [ 'message' => $response->get_error_message() ] );
+	}
+
+	$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+	if ( ! isset( $response_body['status'] ) || $response_body['status'] !== true ) {
+		wp_send_json_error( $response_body );
+	}
+
+	wp_send_json_success( $response_body );
+} );
