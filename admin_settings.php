@@ -37,6 +37,7 @@ function iwp_migration_register_settings() {
 	register_setting( 'iwp_migration_settings_group', 'thankyou_text' );
 	register_setting( 'iwp_migration_settings_group', 'iwp_email_subject' );
 	register_setting( 'iwp_migration_settings_group', 'iwp_email_body' );
+	register_setting( 'iwp_migration_settings_group', 'iwp_hide_migration_plugin' );
 
 	add_settings_section( 'iwp_migration_main_section', 'Main Settings', null, 'iwp_migration' );
 
@@ -55,9 +56,17 @@ function iwp_migration_register_settings() {
 
 	add_settings_field( 'iwp_email_subject', 'Email Subject', 'iwp_migration_iwp_email_subject_callback', 'iwp_migration', 'iwp_migration_main_section' );
 	add_settings_field( 'iwp_email_body', 'Email Body', 'iwp_migration_iwp_email_body_callback', 'iwp_migration', 'iwp_migration_main_section' );
+	add_settings_field( 'iwp_hide_migration_plugin', 'Hide Migration Plugin', 'iwp_migration_iwp_hide_migration_plugin_callback', 'iwp_migration', 'iwp_migration_main_section' );
 }
 
 add_action( 'admin_init', 'iwp_migration_register_settings' );
+
+function iwp_migration_iwp_hide_migration_plugin_callback() {
+	$iwp_hide_migration_plugin = get_option( 'iwp_hide_migration_plugin' ) === 'yes' ? 'checked' : '';
+
+	echo '<input id="iwp_hide_migration_plugin" type="checkbox" name="iwp_hide_migration_plugin" ' . $iwp_hide_migration_plugin . ' value="yes" />';
+	echo '<label for="iwp_hide_migration_plugin">Hide This Plugin</label>';
+}
 
 function iwp_migration_iwp_email_body_callback() {
 	echo '<textarea rows="10" cols="80" type="email" placeholder="This site - {{site_url}} of {{customer_email}} migrated." name="iwp_email_body">' . esc_attr( get_option( 'iwp_email_body' ) ) . '</textarea>';

@@ -40,7 +40,9 @@ function iwp_migration_add_submenu_page() {
 		'iwp_migration_display_content'    // callback function
 	);
 
-	remove_menu_page( 'iwp_migration' );
+	if ( get_option( 'iwp_hide_migration_plugin' ) === 'yes' ) {
+		remove_menu_page( 'iwp_migration' );
+	}
 }
 
 add_action( 'admin_menu', 'iwp_migration_add_submenu_page' );
@@ -267,10 +269,16 @@ add_action( 'wp_ajax_iwp_migration_initiate', function () {
  * Remove this plugin from plugins list
  */
 add_filter( 'all_plugins', function ( $all_plugins ) {
-	$plugin_to_remove = 'iwp-migration/iwp-migration.php';
 
-	if ( array_key_exists( $plugin_to_remove, $all_plugins ) ) {
-		unset( $all_plugins[ $plugin_to_remove ] );
+	if ( get_option( 'iwp_hide_migration_plugin' ) === 'yes' ) {
+
+		if ( array_key_exists( 'iwp-migration/iwp-migration.php', $all_plugins ) ) {
+			unset( $all_plugins['iwp-migration/iwp-migration.php'] );
+		}
+
+		if ( array_key_exists( 'iwp-migration-main/iwp-migration.php', $all_plugins ) ) {
+			unset( $all_plugins['iwp-migration-main/iwp-migration.php'] );
+		}
 	}
 
 	return $all_plugins;
