@@ -1,0 +1,22 @@
+a:15:{s:11:"iwp_api_key";s:40:"R6WIfTVfjsPWHawDVgxTQpkzsJ37eO2eHybOcKY0";s:17:"iwp_support_email";s:17:"jaedm98@gmail.com";s:8:"logo_url";s:64:"https://www.mijndomein.nl/data-assets/images/logo-mijndomein.svg";s:7:"content";s:1067:"Je hebt zojuist een geweldige WordPress website gemaakt op deze demo-omgeving. Wij maken het supermakkelijk om jouw website te publiceren met je webhostingpakket bij Mijndomein.
+
+Hoe werkt het? 🤔
+<ul>
+ 	<li>Webhosting Plus</li>
+ 	<li>Managed WordPress</li>
+ 	<li>Managed WooCommerce</li>
+</ul>
+En natuurlijk een spetterende domeinnaam! 🎉
+
+Heb je nog geen van deze pakketten? Geen zorgen! Ga snel naar mijndomein.nl en bestel het pakket dat je nodig hebt. Dan zorgen wij ervoor dat je WordPress demo-website straks schittert op jouw eigen domeinnaam.
+
+<strong>Druk op de magische knop</strong>
+
+Heb je nog geen van deze pakketten? Geen zorgen! Ga snel naar mijndomein.nl en bestel het pakket dat je nodig hebt. Dan zorgen wij ervoor dat je WordPress demo-website straks schittert op jouw eigen domeinnaam.
+
+Het publiceren van je WordPress website is helemaal gratis. We vinden het gewoon geweldig dat je zo enthousiast bezig bent met Wordpress. Dus, waar wacht je nog op? Klik hieronder om je WordPress website te delen met de rest van de wereld!";s:10:"title_text";s:51:"Publiceer je WordPress website bij Mijndomein! 🚀";s:11:"footer_text";s:216:"Heb je nog vragen of loop je ergens tegenaan? Ons Customer Care team staat altijd voor je klaar. Ga naar onze helpdesk en stel je vraag in de live chat of maak een supportticket aan.
+
+
+Veel plezier met je website!";s:11:"brand_color";s:7:"#6b2fad";s:15:"cta_button_text";s:42:"🚀 Publiceer mijn WordPress website 🚀";s:17:"button_text_color";s:7:"#ffffff";s:16:"background_color";s:7:"#6b2fad";s:12:"top_bar_text";s:7:"Migrate";s:13:"thankyou_text";s:262:"<img class="alignnone size-full wp-image-12 aligncenter" src="http://instawp.local/wp-content/uploads/2023/10/ty.png" alt="" width="223" height="222" />
+<p style="text-align: center;">Your migration request has been sent to our
+customer care representative</p>";s:17:"iwp_email_subject";s:34:"Migration started for {{site_url}}";s:14:"iwp_email_body";s:56:"This site - {{site_url}} of {{customer_email}} migrated.";s:25:"iwp_hide_migration_plugin";s:0:"";}
