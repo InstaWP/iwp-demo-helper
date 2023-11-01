@@ -9,7 +9,7 @@ $cta_button_text   = IWP_Migration::get_option( 'cta_button_text', '🚀 Publice
 $footer_text       = IWP_Migration::get_option( 'footer_text' );
 
 ?>
-<div class="iwp-migration-container iwp-migration-screen-1">
+<div class="iwp-migration-container">
 
     <div class="migration-title">
 		<?php if ( ! empty( $logo_url ) ) : ?>

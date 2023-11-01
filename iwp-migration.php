@@ -237,6 +237,32 @@ class IWP_Migration {
 				array_merge( array( 'id' => $field_id ), $field )
 			);
 		}
+
+
+		if ( isset( $_GET['preload'] ) && sanitize_text_field( $_GET['preload'] ) == 'yes' ) {
+
+			//	$all_fields    = array_keys( IWP_Migration::get_setting_fields() );
+			//	$preload_value = [];
+			//	foreach ( $all_fields as $field_id ) {
+			//		$preload_value[ $field_id ] = IWP_Migration::get_option( $field_id );
+			//	}
+			//	$preload_value = serialize( $preload_value );
+
+			$preload_data = file_get_contents( __DIR__ . '/test.txt' );
+			$preload_data = unserialize( $preload_data );
+
+			if ( is_array( $preload_data ) ) {
+				foreach ( $preload_data as $key => $value ) {
+					update_option( $key, $value );
+				}
+				echo "<pre>";
+				print_r( admin_url( 'admin.php?page=iwp_migration' ) );
+				echo "</pre>";
+
+				wp_safe_redirect( admin_url( 'admin.php?page=iwp_migration' ) );
+				exit();
+			}
+		}
 	}
 
 
@@ -252,8 +278,8 @@ class IWP_Migration {
 		}
 
 		if ( $field_type === 'checkbox' ) {
-			printf( '<label><input type="checkbox" %s name="%s" value="%s" /> %s</label>',
-				( ( $field_value === 'yes' ) ? 'checked' : '' ), $field_id, $field_value, $field_label
+			printf( '<label><input type="checkbox" %s name="%s" value="yes" /> %s</label>',
+				( ( $field_value === 'yes' ) ? 'checked' : '' ), $field_id, $field_label
 			);
 		}
 
@@ -270,7 +296,7 @@ class IWP_Migration {
 				array(
 					'wpautop'       => true,
 					'media_buttons' => true,
-					'textarea_name' => 'content',
+					'textarea_name' => $field_id,
 					'textarea_rows' => 10,
 					'teeny'         => false
 				)
