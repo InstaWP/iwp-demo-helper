@@ -151,65 +151,80 @@ class IWP_Migration {
 	public static function get_setting_fields() {
 		return array(
 			'iwp_api_key'               => array(
-				'title' => 'API Key',
-				'type'  => 'text',
+				'title'   => 'API Key',
+				'type'    => 'text',
+				'default' => '',
 			),
 			'iwp_support_email'         => array(
-				'title' => 'Support Email',
-				'type'  => 'text',
+				'title'   => 'Support Email',
+				'type'    => 'text',
+				'default' => '',
 			),
 			'logo_url'                  => array(
-				'title' => 'Logo URL',
-				'type'  => 'text',
+				'title'   => 'Logo URL',
+				'type'    => 'text',
+				'default' => '',
 			),
 			'content'                   => array(
-				'title' => 'Main Content',
-				'type'  => 'wp_editor',
+				'title'   => 'Main Content',
+				'type'    => 'wp_editor',
+				'default' => '',
 			),
 			'title_text'                => array(
-				'title' => 'Title Text',
-				'type'  => 'text',
+				'title'   => 'Title Text',
+				'type'    => 'text',
+				'default' => '',
 			),
 			'footer_text'               => array(
-				'title' => 'Footer Text',
-				'type'  => 'wp_editor',
+				'title'   => 'Footer Text',
+				'type'    => 'wp_editor',
+				'default' => '',
 			),
 			'brand_color'               => array(
-				'title' => 'Brand Color',
-				'type'  => 'color_picker',
+				'title'   => 'Brand Color',
+				'type'    => 'color_picker',
+				'default' => '',
 			),
 			'cta_button_text'           => array(
-				'title' => 'CTA Button',
-				'type'  => 'text',
+				'title'   => 'CTA Button',
+				'type'    => 'text',
+				'default' => '',
 			),
 			'button_text_color'         => array(
-				'title' => 'CTA Button Color',
-				'type'  => 'color_picker',
+				'title'   => 'CTA Button Color',
+				'type'    => 'color_picker',
+				'default' => '',
 			),
 			'background_color'          => array(
-				'title' => 'CTA Button BG Color',
-				'type'  => 'color_picker',
+				'title'   => 'CTA Button BG Color',
+				'type'    => 'color_picker',
+				'default' => '',
 			),
 			'top_bar_text'              => array(
-				'title' => 'Top Button',
-				'type'  => 'text',
+				'title'   => 'Top Button',
+				'type'    => 'text',
+				'default' => '',
 			),
 			'thankyou_text'             => array(
-				'title' => 'Thank you Text',
-				'type'  => 'wp_editor',
+				'title'   => 'Thank you Text',
+				'type'    => 'wp_editor',
+				'default' => '',
 			),
 			'iwp_email_subject'         => array(
-				'title' => 'Email Subject',
-				'type'  => 'text',
+				'title'   => 'Email Subject',
+				'type'    => 'text',
+				'default' => 'test',
 			),
 			'iwp_email_body'            => array(
-				'title' => 'Email Body',
-				'type'  => 'textarea',
+				'title'   => 'Email Body',
+				'type'    => 'textarea',
+				'default' => '',
 			),
 			'iwp_hide_migration_plugin' => array(
-				'title' => 'Hide Migration Plugin',
-				'label' => 'Hide Plugin',
-				'type'  => 'checkbox',
+				'title'   => 'Hide Migration Plugin',
+				'label'   => 'Hide Plugin',
+				'type'    => 'checkbox',
+				'default' => '',
 			),
 		);
 	}
@@ -237,32 +252,6 @@ class IWP_Migration {
 				array_merge( array( 'id' => $field_id ), $field )
 			);
 		}
-
-
-		if ( isset( $_GET['preload'] ) && sanitize_text_field( $_GET['preload'] ) == 'yes' ) {
-
-			//	$all_fields    = array_keys( IWP_Migration::get_setting_fields() );
-			//	$preload_value = [];
-			//	foreach ( $all_fields as $field_id ) {
-			//		$preload_value[ $field_id ] = IWP_Migration::get_option( $field_id );
-			//	}
-			//	$preload_value = serialize( $preload_value );
-
-			$preload_data = file_get_contents( __DIR__ . '/test.txt' );
-			$preload_data = unserialize( $preload_data );
-
-			if ( is_array( $preload_data ) ) {
-				foreach ( $preload_data as $key => $value ) {
-					update_option( $key, $value );
-				}
-				echo "<pre>";
-				print_r( admin_url( 'admin.php?page=iwp_migration' ) );
-				echo "</pre>";
-
-				wp_safe_redirect( admin_url( 'admin.php?page=iwp_migration' ) );
-				exit();
-			}
-		}
 	}
 
 
@@ -271,7 +260,7 @@ class IWP_Migration {
 		$field_id    = $field['id'] ?? '';
 		$field_label = $field['label'] ?? '';
 		$field_type  = isset( $field['type'] ) ? $field['type'] : 'text';
-		$field_value = self::get_option( $field_id );
+		$field_value = get_option( $field_id, ( $field['default'] ?? '' ) );
 
 		if ( $field_type === 'text' ) {
 			printf( '<input type="text" style="width: 380px;" name="%s" value="%s" />', $field_id, $field_value );
