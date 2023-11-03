@@ -213,7 +213,7 @@ class IWP_Migration {
 			'iwp_email_subject'         => array(
 				'title'   => 'Email Subject',
 				'type'    => 'text',
-				'default' => 'test',
+				'default' => '',
 			),
 			'iwp_email_body'            => array(
 				'title'   => 'Email Body',
