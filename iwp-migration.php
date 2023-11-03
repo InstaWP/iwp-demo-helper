@@ -188,7 +188,7 @@ class IWP_Migration {
 			'cta_button_text'           => array(
 				'title'   => 'CTA Button',
 				'type'    => 'text',
-				'default' => '#fff',
+				'default' => 'Begin Migration',
 			),
 			'button_text_color'         => array(
 				'title'   => 'CTA Button Color',
