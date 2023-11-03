@@ -39,7 +39,7 @@ class IWP_Migration {
 		$iwp_email_body    = get_option( 'iwp_email_body' );
 		$iwp_email_body    = empty( $iwp_email_body ) ? 'Sample email body' : $iwp_email_body;
 		$iwp_api_key       = get_option( 'iwp_api_key' );
-		$iwp_api_domain    = 'https://stage.instawp.io/';
+		$iwp_api_domain    = 'https://app.instawp.io/';
 		$body_args         = array(
 			'url'            => site_url(),
 			'email'          => get_option( 'iwp_support_email' ),
@@ -163,62 +163,62 @@ class IWP_Migration {
 			'logo_url'                  => array(
 				'title'   => 'Logo URL',
 				'type'    => 'text',
-				'default' => '',
+				'default' => 'https://instawpcom.b-cdn.net/wp-content/uploads/2023/07/header-logo.svg',
 			),
 			'content'                   => array(
 				'title'   => 'Main Content',
 				'type'    => 'wp_editor',
-				'default' => '',
+				'default' => 'This a demo site, which you can migrate to your own hosting account in just one click. Click on the Migrate button and we will migrate it!',
 			),
 			'title_text'                => array(
 				'title'   => 'Title Text',
 				'type'    => 'text',
-				'default' => '',
+				'default' => 'Migration Demo',
 			),
 			'footer_text'               => array(
 				'title'   => 'Footer Text',
 				'type'    => 'wp_editor',
-				'default' => '',
+				'default' => 'Powered by InstaWP',
 			),
 			'brand_color'               => array(
 				'title'   => 'Brand Color',
 				'type'    => 'color_picker',
-				'default' => '',
+				'default' => '#005e54',
 			),
 			'cta_button_text'           => array(
 				'title'   => 'CTA Button',
 				'type'    => 'text',
-				'default' => '',
+				'default' => '#fff',
 			),
 			'button_text_color'         => array(
 				'title'   => 'CTA Button Color',
 				'type'    => 'color_picker',
-				'default' => '',
+				'default' => '#fff',
 			),
 			'background_color'          => array(
 				'title'   => 'CTA Button BG Color',
 				'type'    => 'color_picker',
-				'default' => '',
+				'default' => '#005e54',
 			),
 			'top_bar_text'              => array(
 				'title'   => 'Top Button',
 				'type'    => 'text',
-				'default' => '',
+				'default' => 'Migrate',
 			),
 			'thankyou_text'             => array(
 				'title'   => 'Thank you Text',
 				'type'    => 'wp_editor',
-				'default' => '',
+				'default' => 'Thank you, we have sent your request to our support team. We will be in touch soon',
 			),
 			'iwp_email_subject'         => array(
 				'title'   => 'Email Subject',
 				'type'    => 'text',
-				'default' => '',
+				'default' => 'New migration request from {{customer_email}}',
 			),
 			'iwp_email_body'            => array(
 				'title'   => 'Email Body',
 				'type'    => 'textarea',
-				'default' => '',
+				'default' => 'Hello, You have a new migration request from {{customer_email}} for site : {{site_url}}',
 			),
 			'iwp_hide_migration_plugin' => array(
 				'title'   => 'Hide Migration Plugin',
