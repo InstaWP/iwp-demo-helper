@@ -24,7 +24,7 @@ $iwp_custom_css       = IWP_Migration::get_option( 'iwp_custom_css' );
         <h1><?php echo esc_attr( $title_text ); ?></h1>
     </div>
 
-    <div class="migration-content hidden">
+    <div class="migration-content">
         <div>
             <div class="migration-desc">
 				<?php echo wp_kses_post( $content ); ?>
@@ -42,7 +42,7 @@ $iwp_custom_css       = IWP_Migration::get_option( 'iwp_custom_css' );
         </div>
     </div>
 
-    <div class="migration-content  migration-content-thankyou">
+    <div class="migration-content hidden migration-content-thankyou">
         <div class="">
             <div class="iwp-thankyou-text">
 				<?php echo wp_kses_post( get_option( 'thankyou_text' ) ); ?>
