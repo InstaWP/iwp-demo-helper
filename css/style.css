@@ -107,6 +107,12 @@
     margin-bottom: 20px;
 }
 
+.iwp-migration-container .iwp-thankyou-text {
+    margin-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
 .iwp-migration-container .hidden {
     display: none;
 }

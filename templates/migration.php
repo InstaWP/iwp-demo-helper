@@ -1,12 +1,17 @@
 <?php
 
-$logo_url          = IWP_Migration::get_option( 'logo_url' );
-$title_text        = IWP_Migration::get_option( 'title_text' );
-$content           = IWP_Migration::get_option( 'content' );
-$brand_color       = IWP_Migration::get_option( 'brand_color' );
-$button_text_color = IWP_Migration::get_option( 'button_text_color' );
-$cta_button_text   = IWP_Migration::get_option( 'cta_button_text' );
-$footer_text       = IWP_Migration::get_option( 'footer_text' );
+$logo_url             = IWP_Migration::get_option( 'logo_url' );
+$title_text           = IWP_Migration::get_option( 'title_text' );
+$content              = IWP_Migration::get_option( 'content' );
+$brand_color          = IWP_Migration::get_option( 'brand_color' );
+$cta_btn_text_color   = IWP_Migration::get_option( 'cta_btn_text_color' );
+$cta_btn_bg_color     = IWP_Migration::get_option( 'cta_btn_bg_color' );
+$cta_btn_text         = IWP_Migration::get_option( 'cta_btn_text' );
+$footer_text          = IWP_Migration::get_option( 'footer_text' );
+$close_btn_text       = IWP_Migration::get_option( 'close_btn_text' );
+$close_btn_text_color = IWP_Migration::get_option( 'close_btn_text_color' );
+$close_btn_bg_color   = IWP_Migration::get_option( 'close_btn_bg_color' );
+$iwp_custom_css       = IWP_Migration::get_option( 'iwp_custom_css' );
 
 ?>
 <div class="iwp-migration-container">
@@ -19,7 +24,7 @@ $footer_text       = IWP_Migration::get_option( 'footer_text' );
         <h1><?php echo esc_attr( $title_text ); ?></h1>
     </div>
 
-    <div class="migration-content">
+    <div class="migration-content hidden">
         <div>
             <div class="migration-desc">
 				<?php echo wp_kses_post( $content ); ?>
@@ -27,8 +32,8 @@ $footer_text       = IWP_Migration::get_option( 'footer_text' );
 
             <p class="iwp-response-message"></p>
 
-            <button style="background-color:<?php echo esc_attr( $brand_color ); ?>; color:<?php echo esc_attr( $button_text_color ); ?>;" class="iwp-btn iwp-btn-migrate">
-				<?php echo esc_attr( $cta_button_text ); ?>
+            <button style="background-color:<?php echo esc_attr( $cta_btn_bg_color ); ?>; color:<?php echo esc_attr( $cta_btn_text_color ); ?>;" class="iwp-btn iwp-btn-migrate">
+				<?php echo esc_attr( $cta_btn_text ); ?>
             </button>
 
             <div class="iwp_migration_footer">
@@ -37,14 +42,21 @@ $footer_text       = IWP_Migration::get_option( 'footer_text' );
         </div>
     </div>
 
-    <div class="migration-content hidden migration-content-thankyou">
+    <div class="migration-content  migration-content-thankyou">
         <div class="">
             <div class="iwp-thankyou-text">
 				<?php echo wp_kses_post( get_option( 'thankyou_text' ) ); ?>
             </div>
 
-            <button style="background-color:<?php echo esc_attr( $brand_color ); ?>; color:<?php echo esc_attr( $button_text_color ); ?>;" class="iwp-btn iwp-migrate-close">Close</button>
+            <button style="background-color:<?php echo esc_attr( $close_btn_bg_color ); ?>; color:<?php echo esc_attr( $close_btn_text_color ); ?>;" class="iwp-btn iwp-migrate-close"><?= $close_btn_text; ?></button>
         </div>
     </div>
 
 </div>
+
+<?php if ( ! empty( $iwp_custom_css ) ) : ?>
+    <style>
+        <?= $iwp_custom_css ?>
+    </style>
+<?php endif; ?>
+

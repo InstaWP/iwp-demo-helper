@@ -84,6 +84,12 @@ class IWP_Migration {
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 			)
 		);
+
+
+		if ( wp_enqueue_code_editor( array( 'type' => 'text/css' ) ) ) {
+			wp_enqueue_script( 'wp-theme-plugin-editor' );
+			wp_enqueue_style( 'wp-codemirror' );
+		}
 	}
 
 
@@ -185,18 +191,33 @@ class IWP_Migration {
 				'type'    => 'color_picker',
 				'default' => '#005e54',
 			),
-			'cta_button_text'           => array(
-				'title'   => 'CTA Button',
+			'cta_btn_text'              => array(
+				'title'   => 'CTA Button - Text',
 				'type'    => 'text',
 				'default' => 'Begin Migration',
 			),
-			'button_text_color'         => array(
-				'title'   => 'CTA Button Color',
+			'cta_btn_text_color'        => array(
+				'title'   => 'CTA Button - Color',
 				'type'    => 'color_picker',
 				'default' => '#fff',
 			),
-			'background_color'          => array(
-				'title'   => 'CTA Button BG Color',
+			'cta_btn_bg_color'          => array(
+				'title'   => 'CTA Button - BG Color',
+				'type'    => 'color_picker',
+				'default' => '#005e54',
+			),
+			'close_btn_text'            => array(
+				'title'   => 'Close Button - Text',
+				'type'    => 'text',
+				'default' => 'Close',
+			),
+			'close_btn_text_color'      => array(
+				'title'   => 'Close Button - Color',
+				'type'    => 'color_picker',
+				'default' => '#fff',
+			),
+			'close_btn_bg_color'        => array(
+				'title'   => 'Close Button - BG Color',
 				'type'    => 'color_picker',
 				'default' => '#005e54',
 			),
@@ -219,6 +240,11 @@ class IWP_Migration {
 				'title'   => 'Email Body',
 				'type'    => 'textarea',
 				'default' => 'Hello, You have a new migration request from {{customer_email}} for site : {{site_url}}',
+			),
+			'iwp_custom_css'            => array(
+				'title'       => 'Custom CSS',
+				'type'        => 'css_editor',
+				'placeholder' => '/* Enter your custom CSS here */',
 			),
 			'iwp_hide_migration_plugin' => array(
 				'title'   => 'Hide Migration Plugin',
@@ -259,6 +285,7 @@ class IWP_Migration {
 
 		$field_id    = $field['id'] ?? '';
 		$field_label = $field['label'] ?? '';
+		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : '';
 		$field_type  = isset( $field['type'] ) ? $field['type'] : 'text';
 		$field_value = get_option( $field_id, ( $field['default'] ?? '' ) );
 
@@ -273,7 +300,31 @@ class IWP_Migration {
 		}
 
 		if ( $field_type === 'textarea' ) {
-			printf( '<textarea rows="10" cols="80" name="%s">%s</textarea>', $field_id, $field_value );
+			printf( '<textarea rows="10" placeholder="%s" cols="80" name="%s">%s</textarea>', $placeholder, $field_id, $field_value );
+		}
+
+		if ( $field_type === 'css_editor' ) {
+			$random_id = uniqid( 'iwp-' );
+
+			printf( '<textarea id="%s" rows="10" cols="80" name="%s">%s</textarea>', $random_id, $field_id, $field_value );
+			?>
+            <script>
+                (function ($) {
+                    $(document).ready(function () {
+                        let editorSettings = wp.codeEditor.defaultSettings ? _.clone(wp.codeEditor.defaultSettings) : {};
+                        editorSettings.codemirror = _.extend({},
+                            editorSettings.codemirror, {
+                                mode: 'css',
+                                indentUnit: 4,
+                                tabSize: 4,
+                                placeholder: '<?= $placeholder; ?>'
+                            }
+                        );
+                        wp.codeEditor.initialize($('#<?= $random_id ?>'), editorSettings);
+                    });
+                })(jQuery);
+            </script>
+			<?php
 		}
 
 		if ( $field_type === 'color_picker' ) {
@@ -298,6 +349,14 @@ class IWP_Migration {
 		$option_value = get_option( $option_name );
 
 		if ( empty( $option_value ) ) {
+
+			$all_options = self::get_setting_fields();
+			$this_option = $all_options[ $option_name ] ?? [];
+
+			if ( ! empty( $this_option ) && is_array( $this_option ) && empty( $default ) ) {
+				$default = $this_option['default'] ?? '';
+			}
+
 			return $default;
 		}
 
