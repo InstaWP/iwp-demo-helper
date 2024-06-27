@@ -3,7 +3,7 @@
 Plugin Name: IWP Migration
 Description: A custom plugin to add a button with specific settings.
 Version: 1.0
-Author: InstaWP
+Author: InstaWP Inc
 */
 
 class IWP_Migration {
