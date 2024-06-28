@@ -4,6 +4,10 @@
         $('.iwp-color-picker').wpColorPicker();
     });
 
+    $(document).on('change', 'input[name="iwp_disable_email"]', function () {
+        $('input[name="iwp_support_email"]').prop('disabled', $(this).is(':checked'));
+    });
+
     $(document).on('click', '.iwp-migrate-close', function () {
         let el_screen_content = $('.migration-content'),
             el_screen_content_thankyou = $('.migration-content-thankyou'),
@@ -32,8 +36,6 @@
             },
             success: function (response) {
 
-                console.log(response);
-
                 if (!response.success) {
                     el_response_message.addClass('notice notice-error').html(response.data.message);
                 }
@@ -41,6 +43,12 @@
                 if (response.success) {
                     el_screen_content.addClass('hidden');
                     el_screen_content_thankyou.removeClass('hidden');
+
+                    setTimeout(function () {
+                        if (response.data.redirection_url && response.data.redirection_url !== '') {
+                            window.location.href = response.data.redirection_url;
+                        }
+                    }, 2000);
                 }
             }
         });

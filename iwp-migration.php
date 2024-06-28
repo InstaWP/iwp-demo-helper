@@ -2,7 +2,7 @@
 /*
 Plugin Name: IWP Migration
 Description: A custom plugin to add a button with specific settings.
-Version: 1.0
+Version: 1.0.1
 Author: InstaWP Inc
 */
 
@@ -47,18 +47,23 @@ class IWP_Migration {
 			'subject'        => $iwp_email_subject,
 			'body'           => $iwp_email_body,
 		);
-		$headers           = array(
+
+		if ( get_option( 'iwp_disable_email' ) == 'yes' ) {
+			$body_args['email'] = '';
+		}
+
+		$headers  = array(
 			'Accept'        => 'application/json',
 			'Content-Type'  => 'application/json',
 			'Authorization' => 'Bearer ' . $iwp_api_key,
 		);
-		$args              = array(
+		$args     = array(
 			'headers'     => $headers,
 			'body'        => json_encode( $body_args ),
 			'method'      => 'POST',
 			'data_format' => 'body'
 		);
-		$response          = wp_remote_post( $iwp_api_domain . 'api/v2/migrate-request', $args );
+		$response = wp_remote_post( $iwp_api_domain . 'api/v2/migrate-request', $args );
 
 		if ( is_wp_error( $response ) ) {
 			wp_send_json_error( [ 'message' => $response->get_error_message() ] );
@@ -70,6 +75,29 @@ class IWP_Migration {
 			wp_send_json_error( $response_body );
 		}
 
+		if ( ! empty( $redirection_url = get_option( 'iwp_redirection_url' ) ) ) {
+			$response_body['redirection_url'] = $redirection_url;
+		}
+
+		if ( ! empty( $webhook_url = get_option( 'iwp_webhook_url' ) ) ) {
+			$webhook_args     = array(
+				'body'        => json_encode( $body_args ),
+				'headers'     => array(
+					'Content-Type' => 'application/json',
+				),
+				'method'      => 'POST',
+				'data_format' => 'body',
+			);
+			$webhook_response = wp_remote_post( $webhook_url, $webhook_args );
+
+			if ( is_wp_error( $webhook_response ) ) {
+				$response_body['webhook_status']  = false;
+				$response_body['webhook_message'] = $webhook_response->get_error_message();
+			} else {
+				$response_body['webhook_status'] = true;
+			}
+		}
+
 		wp_send_json_success( $response_body );
 	}
 
@@ -78,13 +106,12 @@ class IWP_Migration {
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'wp-color-picker' );
 		wp_enqueue_style( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'css/style.css' );
-		wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ) );
+		wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ), time() );
 		wp_localize_script( 'iwp-migration', 'iwp_migration',
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 			)
 		);
-
 
 		if ( wp_enqueue_code_editor( array( 'type' => 'text/css' ) ) ) {
 			wp_enqueue_script( 'wp-theme-plugin-editor' );
@@ -164,6 +191,12 @@ class IWP_Migration {
 			'iwp_support_email'         => array(
 				'title'   => 'Support Email',
 				'type'    => 'text',
+				'default' => '',
+			),
+			'iwp_disable_email'         => array(
+//				'title'   => 'Support Email',
+				'label'   => 'Do not send support email on publish',
+				'type'    => 'checkbox',
 				'default' => '',
 			),
 			'logo_url'                  => array(
@@ -252,6 +285,18 @@ class IWP_Migration {
 				'type'    => 'checkbox',
 				'default' => '',
 			),
+			'iwp_redirection_url'       => array(
+				'title'       => 'Redirection URL',
+				'type'        => 'url',
+				'placeholder' => 'https://my-redirection-url.com',
+				'default'     => '',
+			),
+			'iwp_webhook_url'           => array(
+				'title'       => 'Webhook URL',
+				'type'        => 'url',
+				'placeholder' => 'https://my-webhook-url.com',
+				'default'     => '',
+			),
 		);
 	}
 
@@ -271,7 +316,7 @@ class IWP_Migration {
 		foreach ( self::get_setting_fields() as $field_id => $field ) {
 			add_settings_field(
 				$field_id,
-				$field['title'] ?? '',
+				isset( $field['title'] ) ? $field['title'] : '',
 				array( $this, 'render_setting_field' ),
 				'iwp_migration',
 				self::$_settings_section,
@@ -288,13 +333,24 @@ class IWP_Migration {
 		$placeholder = isset( $field['placeholder'] ) ? $field['placeholder'] : '';
 		$field_type  = isset( $field['type'] ) ? $field['type'] : 'text';
 		$field_value = get_option( $field_id, ( $field['default'] ?? '' ) );
+		$is_disabled = '';
+
+		if ( $field_id == 'iwp_support_email' ) {
+			if ( get_option( 'iwp_disable_email' ) == 'yes' ) {
+				$is_disabled = 'disabled';
+			}
+		}
 
 		if ( $field_type === 'text' ) {
-			printf( '<input type="text" style="width: 380px;" name="%s" value="%s" />', $field_id, $field_value );
+			printf( '<input %s type="text" style="width: 380px;" name="%s" value="%s" placeholder="%s" />', $is_disabled, $field_id, $field_value, $placeholder );
+		}
+
+		if ( $field_type === 'url' ) {
+			printf( '<input type="url" style="width: 380px;" name="%s" value="%s" placeholder="%s" />', $field_id, $field_value, $placeholder );
 		}
 
 		if ( $field_type === 'checkbox' ) {
-			printf( '<label><input type="checkbox" %s name="%s" value="yes" /> %s</label>',
+			printf( '<label style="cursor: pointer;"><input type="checkbox" %s name="%s" value="yes" /> %s</label>',
 				( ( $field_value === 'yes' ) ? 'checked' : '' ), $field_id, $field_label
 			);
 		}
