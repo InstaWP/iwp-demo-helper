@@ -44,11 +44,11 @@
                     el_screen_content.addClass('hidden');
                     el_screen_content_thankyou.removeClass('hidden');
 
-                    setTimeout(function () {
-                        if (response.data.redirection_url && response.data.redirection_url !== '') {
-                            window.location.href = response.data.redirection_url;
-                        }
-                    }, 2000);
+                    if (response.data.redirection_url && response.data.redirection_url !== '') {
+                        window.location.href = response.data.redirection_url;
+                    }
+
+                    // setTimeout(function () {}, 2000);
                 }
             }
         });

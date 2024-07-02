@@ -30,6 +30,43 @@ class IWP_Migration {
 		add_action( 'wp_ajax_iwp_migration_initiate', array( $this, 'iwp_migration_initiate' ) );
 
 		add_filter( 'all_plugins', array( $this, 'remove_plugin_from_list' ) );
+		add_action( 'admin_footer', array( $this, 'render_css_for_admin_bar_btn' ) );
+	}
+
+	function render_css_for_admin_bar_btn() {
+
+		$css_rules = array(
+			array(
+				'selectors' => array(
+					'#wpadminbar .iwp_migration_class > a',
+					'#wpadminbar .iwp_migration_class > a:hover',
+					'#wpadminbar .iwp_migration_class > a:focus',
+					'#wpadminbar .iwp_migration_class > a:visited',
+				),
+				'rules'     => array(
+					'background-color' => IWP_Migration::get_option( 'cta_btn_bg_color', '#6b2fad' ) . ' !important',
+					'color'            => IWP_Migration::get_option( 'cta_btn_text_color', '#fff' ) . ' !important',
+				),
+			)
+		);
+
+		ob_start();
+
+		foreach ( $css_rules as $css_rule ) {
+			$selectors = isset( $css_rule['selectors'] ) ? $css_rule['selectors'] : array();
+			$rules     = isset( $css_rule['rules'] ) ? $css_rule['rules'] : array();
+			$rules     = array_map( function ( $rule_value, $rule_name ) {
+				return sprintf( '%s: %s;', $rule_name, $rule_value );
+			}, $rules, array_keys( $rules ) );
+
+			printf( '%s { %s }', implode( ',', $selectors ), implode( ' ', $rules ) );
+		}
+
+		if ( ! empty( $custom_css = IWP_Migration::get_option( 'iwp_custom_css' ) ) ) {
+			printf( '%s', $custom_css );
+		}
+
+		printf( '<style>%s</style>', ob_get_clean() );
 	}
 
 

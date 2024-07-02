@@ -11,7 +11,6 @@ $footer_text          = IWP_Migration::get_option( 'footer_text' );
 $close_btn_text       = IWP_Migration::get_option( 'close_btn_text' );
 $close_btn_text_color = IWP_Migration::get_option( 'close_btn_text_color' );
 $close_btn_bg_color   = IWP_Migration::get_option( 'close_btn_bg_color' );
-$iwp_custom_css       = IWP_Migration::get_option( 'iwp_custom_css' );
 
 ?>
 <div class="iwp-migration-container">
@@ -53,10 +52,3 @@ $iwp_custom_css       = IWP_Migration::get_option( 'iwp_custom_css' );
     </div>
 
 </div>
-
-<?php if ( ! empty( $iwp_custom_css ) ) : ?>
-    <style>
-        <?= $iwp_custom_css ?>
-    </style>
-<?php endif; ?>
-

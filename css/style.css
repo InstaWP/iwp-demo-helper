@@ -8,8 +8,8 @@
 #wpadminbar .iwp_migration_class > a:hover,
 #wpadminbar .iwp_migration_class > a:focus,
 #wpadminbar .iwp_migration_class > a:visited {
-    background-color: #6b2fad !important;
-    color: #fff !important;
+    background-color: #6b2fad;
+    color: #fff;
 }
 
 .iwp-migration-container .iwp-btn {
