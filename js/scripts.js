@@ -23,6 +23,7 @@
 
         let el_screen_content = $('.migration-content'),
             el_screen_content_thankyou = $('.migration-content-thankyou'),
+            el_input_field = $('input#iwp-domain-name'),
             el_response_message = $('.iwp-response-message');
 
         el_response_message.removeClass('notice notice-error').html('');
@@ -32,7 +33,8 @@
             url: plugin_object.ajax_url,
             context: this,
             data: {
-                'action': 'iwp_migration_initiate'
+                'action': 'iwp_migration_initiate',
+                'domain_name': el_input_field.val(),
             },
             success: function (response) {
 

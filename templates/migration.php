@@ -31,6 +31,13 @@ $close_btn_bg_color   = IWP_Migration::get_option( 'close_btn_bg_color' );
 
             <p class="iwp-response-message"></p>
 
+
+			<?php if ( get_option( 'iwp_show_domain_field' ) === 'yes' ) : ?>
+                <label class="iwp-form-fields">
+                    <input type="text" id="iwp-domain-name" placeholder="<?php echo esc_attr( 'your-domain-name' ); ?>">
+                </label>
+			<?php endif; ?>
+
             <button style="background-color:<?php echo esc_attr( $cta_btn_bg_color ); ?>; color:<?php echo esc_attr( $cta_btn_text_color ); ?>;" class="iwp-btn iwp-btn-migrate">
 				<?php echo esc_attr( $cta_btn_text ); ?>
             </button>

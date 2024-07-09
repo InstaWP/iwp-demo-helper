@@ -103,6 +103,23 @@
 }
 
 
+.iwp-migration-container .iwp-form-fields {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    margin: 15px 0 20px;
+}
+
+.iwp-migration-container .iwp-form-fields input[type=text],
+.iwp-migration-container .iwp-form-fields input[type=text]:focus,
+.iwp-migration-container .iwp-form-fields input[type=text]:active {
+    min-width: 320px;
+    padding: 5px 8px;
+    border: 1px solid #dedede;
+    outline: none;
+    box-shadow: none;
+}
+
 .iwp-migration-container .iwp-response-message {
     margin-bottom: 20px;
 }

@@ -71,6 +71,7 @@ class IWP_Migration {
 
 
 	function iwp_migration_initiate() {
+		$domain_name       = isset( $_POST['domain_name'] ) ? sanitize_text_field( $_POST['domain_name'] ) : '';
 		$iwp_email_subject = get_option( 'iwp_email_subject' );
 		$iwp_email_subject = empty( $iwp_email_subject ) ? 'Sample email subject' : $iwp_email_subject;
 		$iwp_email_body    = get_option( 'iwp_email_body' );
@@ -108,11 +109,18 @@ class IWP_Migration {
 
 		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
+		error_log( 'Response from api/v2/migrate-request:' . json_encode( $response_body ) );
+
 		if ( ! isset( $response_body['status'] ) || $response_body['status'] !== true ) {
 			wp_send_json_error( $response_body );
 		}
 
 		if ( ! empty( $redirection_url = get_option( 'iwp_redirection_url' ) ) ) {
+
+			if ( ! empty( $domain_name ) ) {
+				$redirection_url .= '?domain=' . $domain_name;
+			}
+
 			$response_body['redirection_url'] = $redirection_url;
 		}
 
@@ -333,6 +341,12 @@ class IWP_Migration {
 				'type'        => 'url',
 				'placeholder' => 'https://my-webhook-url.com',
 				'default'     => '',
+			),
+			'iwp_show_domain_field'     => array(
+				'title'   => 'Show Domain Field',
+				'label'   => 'Display domain input field',
+				'type'    => 'checkbox',
+				'default' => '',
 			),
 		);
 	}
