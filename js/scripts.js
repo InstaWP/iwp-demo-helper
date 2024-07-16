@@ -43,14 +43,15 @@
                 }
 
                 if (response.success) {
-                    el_screen_content.addClass('hidden');
-                    el_screen_content_thankyou.removeClass('hidden');
 
                     if (response.data.redirection_url && response.data.redirection_url !== '') {
                         window.location.href = response.data.redirection_url;
+
+                        return;
                     }
 
-                    // setTimeout(function () {}, 2000);
+                    el_screen_content.addClass('hidden');
+                    el_screen_content_thankyou.removeClass('hidden');
                 }
             }
         });

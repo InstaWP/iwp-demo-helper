@@ -30,7 +30,7 @@ class IWP_Migration {
 		add_action( 'wp_ajax_iwp_migration_initiate', array( $this, 'iwp_migration_initiate' ) );
 
 		add_filter( 'all_plugins', array( $this, 'remove_plugin_from_list' ) );
-		add_action( 'admin_footer', array( $this, 'render_css_for_admin_bar_btn' ) );
+		add_action( 'admin_bar_menu', array( $this, 'render_css_for_admin_bar_btn' ) );
 	}
 
 	function render_css_for_admin_bar_btn() {
@@ -347,6 +347,11 @@ class IWP_Migration {
 				'label'   => 'Display domain input field',
 				'type'    => 'checkbox',
 				'default' => '',
+			),
+			'iwp_domain_field_label'    => array(
+				'title'   => 'Domain Field Placeholder',
+				'type'    => 'text',
+				'default' => 'Enter your domain name',
 			),
 		);
 	}

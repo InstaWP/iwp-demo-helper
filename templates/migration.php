@@ -34,7 +34,7 @@ $close_btn_bg_color   = IWP_Migration::get_option( 'close_btn_bg_color' );
 
 			<?php if ( get_option( 'iwp_show_domain_field' ) === 'yes' ) : ?>
                 <label class="iwp-form-fields">
-                    <input type="text" id="iwp-domain-name" placeholder="<?php echo esc_attr( 'your-domain-name' ); ?>">
+                    <input type="text" id="iwp-domain-name" placeholder="<?php echo esc_attr( get_option( 'iwp_domain_field_label', __( 'Enter your domain name', 'iwp-migration' ) ) ); ?>">
                 </label>
 			<?php endif; ?>
 
