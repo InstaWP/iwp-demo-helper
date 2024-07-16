@@ -13,13 +13,13 @@ Setup Video - https://www.youtube.com/watch?v=P52XQOCV3B8
 
 ## Changelog
 
-#### 1.0.0 - 30 October 2023
-- NEW - Initial Release.
+#### 1.0.2 - 16 July 2024
+- NEW - Domain field placeholder added.
+- FIX - Fixed redirection immediately instead of showing thank you screen.
 
 #### 1.0.1 - 28 June 2024
 - NEW - Email disabling feature added.
 - NEW - Domain field added.
 
-#### 1.0.2 - 16 July 2024
-- NEW - Domain field placeholder added.
-- FIX - Fixed redirection immediately instead of showing thank you screen.
+#### 1.0.0 - 30 October 2023
+- NEW - Initial Release.
