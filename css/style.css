@@ -29,6 +29,13 @@
     border: none;
 }
 
+.iwp-migration-container .iwp-btn.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+    -webkit-user-select: none;
+}
+
 .iwp-migration-container ul {
     list-style: disc;
     padding-left: 30px;

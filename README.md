@@ -13,6 +13,10 @@ Setup Video - https://www.youtube.com/watch?v=P52XQOCV3B8
 
 ## Changelog
 
+#### 1.0.3 - 22 September 2024
+- FIX - Fixed api domain support from constant.
+- FIX - Disabled migrate button while it's working in the background.
+
 #### 1.0.2 - 16 July 2024
 - NEW - Domain field placeholder added.
 - FIX - Fixed redirection immediately instead of showing thank you screen.

@@ -27,6 +27,7 @@
             el_response_message = $('.iwp-response-message');
 
         el_response_message.removeClass('notice notice-error').html('');
+        $(this).addClass('disabled');
 
         $.ajax({
             type: 'POST',
@@ -40,6 +41,7 @@
 
                 if (!response.success) {
                     el_response_message.addClass('notice notice-error').html(response.data.message);
+                    $(this).removeClass('disabled');
                 }
 
                 if (response.success) {

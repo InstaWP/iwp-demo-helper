@@ -2,7 +2,7 @@
 /*
 Plugin Name: IWP Migration
 Description: A custom plugin to add a button with specific settings.
-Version: 1.0.1
+Version: 1.0.3
 Author: InstaWP Inc
 */
 
@@ -77,7 +77,7 @@ class IWP_Migration {
 		$iwp_email_body    = get_option( 'iwp_email_body' );
 		$iwp_email_body    = empty( $iwp_email_body ) ? 'Sample email body' : $iwp_email_body;
 		$iwp_api_key       = get_option( 'iwp_api_key' );
-		$iwp_api_domain    = 'https://app.instawp.io/';
+		$iwp_api_domain    = defined('INSTAWP_API_DOMAIN' ) ? INSTAWP_API_DOMAIN : 'https://app.instawp.io';
 		$body_args         = array(
 			'url'            => site_url(),
 			'email'          => get_option( 'iwp_support_email' ),
@@ -101,7 +101,7 @@ class IWP_Migration {
 			'method'      => 'POST',
 			'data_format' => 'body'
 		);
-		$response = wp_remote_post( $iwp_api_domain . 'api/v2/migrate-request', $args );
+		$response = wp_remote_post( $iwp_api_domain . '/api/v2/migrate-request', $args );
 
 		if ( is_wp_error( $response ) ) {
 			wp_send_json_error( [ 'message' => $response->get_error_message() ] );
