@@ -6,6 +6,8 @@ Version: 1.0.3
 Author: InstaWP Inc
 */
 
+defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.3' );
+
 class IWP_Migration {
 
 	protected static $_instance = null;
@@ -31,6 +33,29 @@ class IWP_Migration {
 
 		add_filter( 'all_plugins', array( $this, 'remove_plugin_from_list' ) );
 		add_action( 'admin_bar_menu', array( $this, 'render_css_for_admin_bar_btn' ) );
+
+		$this->check_update();
+	}
+
+	/**
+	 * Checks for any available updates for the plugin.
+	 *
+	 * This function is intended to verify and handle any necessary updates
+	 * for the plugin.
+	 * 
+	 * @since 1.0.5
+	 * @return void
+	 */
+	function check_update() {
+		if ( class_exists( 'InstaWP\Connect\Helpers\AutoUpdatePluginFromGitHub' ) ) {
+			$updater = new InstaWP\Connect\Helpers\AutoUpdatePluginFromGitHub(
+				IWP_MIG_PLUGIN_VERSION, // Current version
+				'https://github.com/InstaWP/iwp-migration', // URL to GitHub repo
+				plugin_basename( __FILE__ ) // Plugin slug
+			);
+		} else {
+			error_log( 'Update check class not found.' );
+		}
 	}
 
 	function render_css_for_admin_bar_btn() {
@@ -484,6 +509,10 @@ class IWP_Migration {
 
 		return self::$_instance;
 	}
+}
+
+if ( file_exists( plugin_dir_path( __FILE__ ) . 'vendor/autoload.php' ) ) {
+	require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 }
 
 IWP_Migration::instance();
