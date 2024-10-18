@@ -1,3 +1,6 @@
 # ignore node dependency directories
 .DS_Store
 **/.DS_Store
+/node_modules
+composer.lock
+package-lock.json
