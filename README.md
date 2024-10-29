@@ -1,4 +1,4 @@
-# Migration Helper for Hosts
+# InstaWP Demo Helper
 
 This plugin can be used along side with temporary demos offered by Hosts. This plugin allows end users to request a migration from within the wp-admin panel. 
 
@@ -13,9 +13,9 @@ Setup Video - https://www.youtube.com/watch?v=P52XQOCV3B8
 
 ## Changelog
 
-#### 1.0.4 - 
+#### 1.0.4 - 29 October 2024
 
-- New - The system now automatically checks for updates.
+- NEW - The system now automatically checks for updates.
 
 #### 1.0.3 - 22 September 2024
 - FIX - Fixed api domain support from constant.

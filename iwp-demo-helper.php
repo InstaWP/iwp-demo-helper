@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: IWP Migration
+Plugin Name: InstaWP Demo Helper
 Description: A custom plugin to add a button with specific settings.
-Version: 1.0.3
+Version: 1.0.4
 Author: InstaWP Inc
 */
 
-defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.3' );
+defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.4' );
 
 class IWP_Migration {
 
