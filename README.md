@@ -13,6 +13,10 @@ Setup Video - https://www.youtube.com/watch?v=P52XQOCV3B8
 
 ## Changelog
 
+#### 1.0.5 - 29 October 2024
+
+- FIX - Updated composer dependencies.
+
 #### 1.0.4 - 29 October 2024
 
 - NEW - The system now automatically checks for updates.
