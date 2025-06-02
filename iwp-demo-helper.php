@@ -238,16 +238,23 @@ class IWP_Migration {
 
 
 	function add_migrate_button( $wp_admin_bar ) {
-		$wp_admin_bar->add_node(
-			array(
-				'id'    => 'iwp_migration_btn',
-				'title' => esc_attr( get_option( 'top_bar_text', 'Migrate' ) ),
-				'href'  => admin_url( 'admin.php?page=iwp_migrate_content' ),
-				'meta'  => array(
-					'class' => 'menupop iwp_migration_class',
-				)
+		$button_location = IWP_Migration::get_option( 'top_button_location', 'left' );
+
+		$args = array(
+			'id'    => 'iwp_migration_btn',
+			'title' => esc_attr( get_option( 'top_bar_text', 'Migrate' ) ),
+			'href'  => admin_url( 'admin.php?page=iwp_migrate_content' ),
+			'meta'  => array(
+				'class' => 'menupop iwp_migration_class',
 			)
 		);
+
+		if ( $button_location === 'right' ) {
+			$args['parent'] = 'top-secondary';
+			$args['meta']['class'] .= ' iwp_migration_class_right';
+		}
+
+		$wp_admin_bar->add_node( $args );
 	}
 
 
@@ -328,6 +335,15 @@ class IWP_Migration {
 				'title'   => 'Top Button',
 				'type'    => 'text',
 				'default' => 'Migrate',
+			),
+			'top_button_location' => array(
+				'title'   => 'Top Button Location',
+				'type'    => 'radio',
+				'options' => array(
+					'left'  => 'Left',
+					'right' => 'Right',
+				),
+				'default' => 'left',
 			),
 			'thankyou_text'             => array(
 				'title'   => 'Thank you Text',
@@ -478,6 +494,22 @@ class IWP_Migration {
 					'teeny'         => false
 				)
 			);
+		}
+
+		if ( $field_type === 'radio' ) {
+			$options = isset( $field['options'] ) ? $field['options'] : array();
+			if ( ! empty( $options ) ) {
+				echo '<fieldset>';
+				foreach ( $options as $value => $label ) {
+					printf( '<label style="margin-right: 10px;"><input type="radio" name="%s" value="%s" %s /> %s</label>',
+						$field_id,
+						esc_attr( $value ),
+						checked( $field_value, $value, false ),
+						esc_html( $label )
+					);
+				}
+				echo '</fieldset>';
+			}
 		}
 	}
 

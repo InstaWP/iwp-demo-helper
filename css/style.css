@@ -12,6 +12,12 @@
     color: #fff;
 }
 
+#wpadminbar .iwp_migration_class_right {
+    /* Add any specific right-alignment adjustments here if needed */
+    /* For example, you might need to adjust margins or padding */
+    margin-right: 10px; /* Example: Add some margin to the right */
+}
+
 .iwp-migration-container .iwp-btn {
     font-family: 'Inter', sans-serif;
     display: flex;
