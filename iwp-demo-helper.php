@@ -179,7 +179,9 @@ class IWP_Migration {
 		wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ), time() );
 		wp_localize_script( 'iwp-migration', 'iwp_migration',
 			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'ajax_url'              => admin_url( 'admin-ajax.php' ),
+				'demo_site_url'         => site_url(),
+				'enable_src_demo_url'   => IWP_Migration::get_option( 'iwp_enable_src_demo_url', '' ),
 			)
 		);
 
@@ -286,6 +288,12 @@ class IWP_Migration {
 				'type'    => 'wp_editor',
 				'default' => 'This a demo site, which you can migrate to your own hosting account in just one click. Click on the Migrate button and we will migrate it!',
 			),
+			'iwp_enable_src_demo_url' => array(
+				'title' => 'Append Source Demo URL',
+				'label' => 'Append src_demo_url parameter to links in Main Content',
+				'type' => 'checkbox',
+				'default' => '',
+			),
 			'title_text'                => array(
 				'title'   => 'Title Text',
 				'type'    => 'text',
@@ -300,6 +308,12 @@ class IWP_Migration {
 				'title'   => 'Brand Color',
 				'type'    => 'color_picker',
 				'default' => '#005e54',
+			),
+			'iwp_hide_cta_button' => array(
+				'title' => 'Hide CTA Button',
+				'label' => 'Hide CTA Button on migration page',
+				'type' => 'checkbox',
+				'default' => '',
 			),
 			'cta_btn_text'              => array(
 				'title'   => 'CTA Button - Text',
@@ -501,7 +515,7 @@ class IWP_Migration {
 			if ( ! empty( $options ) ) {
 				echo '<fieldset>';
 				foreach ( $options as $value => $label ) {
-					printf( '<label style="margin-right: 10px;"><input type="radio" name="%s" value="%s" %s /> %s</label>',
+					printf( '<label style="padding-right: 10px;"><input type="radio" name="%s" value="%s" %s /> %s</label>',
 						$field_id,
 						esc_attr( $value ),
 						checked( $field_value, $value, false ),

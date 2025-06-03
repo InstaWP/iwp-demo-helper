@@ -59,5 +59,26 @@
         });
     });
 
+    // Code for appending src_demo_url
+    function append_src_demo_url() {
+        if ($('body.admin_page_iwp_migrate_content .migration-content .migration-desc a').length > 0 && plugin_object.enable_src_demo_url === 'yes') {
+            var demoUrl = plugin_object.demo_site_url;
+            if (demoUrl) { // Ensure demoUrl is not empty
+                $('.migration-desc a').each(function () {
+                    var link = $(this);
+                    var currentHref = link.attr('href');
+                    if (currentHref && currentHref !== '#' && !currentHref.startsWith('javascript:')) { // Basic check to avoid modifying empty or JS links
+                        var paramSeparator = currentHref.indexOf('?') === -1 ? '?' : '&';
+                        var newHref = currentHref + paramSeparator + 'src_demo_url=' + encodeURIComponent(demoUrl);
+                        link.attr('href', newHref);
+                    }
+                });
+            }
+        }
+    }
+
+    setTimeout(function () {
+        append_src_demo_url();
+    }, 500);
 })(jQuery, window, document, iwp_migration);
 
