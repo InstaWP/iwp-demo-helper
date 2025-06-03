@@ -1,5 +1,6 @@
 <?php
 
+$hide_cta_button      = IWP_Migration::get_option( 'iwp_hide_cta_button', '' );
 $logo_url             = IWP_Migration::get_option( 'logo_url' );
 $title_text           = IWP_Migration::get_option( 'title_text' );
 $content              = IWP_Migration::get_option( 'content' );
@@ -38,9 +39,11 @@ $close_btn_bg_color   = IWP_Migration::get_option( 'close_btn_bg_color' );
                 </label>
 			<?php endif; ?>
 
+			<?php if ( $hide_cta_button !== 'yes' ) : ?>
             <button style="background-color:<?php echo esc_attr( $cta_btn_bg_color ); ?>; color:<?php echo esc_attr( $cta_btn_text_color ); ?>;" class="iwp-btn iwp-btn-migrate">
 				<?php echo esc_attr( $cta_btn_text ); ?>
             </button>
+			<?php endif; ?>
 
             <div class="iwp_migration_footer">
 				<?php echo wp_kses_post( $footer_text ); ?>

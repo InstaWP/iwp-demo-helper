@@ -179,7 +179,9 @@ class IWP_Migration {
 		wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ), time() );
 		wp_localize_script( 'iwp-migration', 'iwp_migration',
 			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'ajax_url'              => admin_url( 'admin-ajax.php' ),
+				'demo_site_url'         => site_url(),
+				'enable_src_demo_url'   => IWP_Migration::get_option( 'iwp_enable_src_demo_url', '' ),
 			)
 		);
 
@@ -364,6 +366,18 @@ class IWP_Migration {
 				'title'       => 'Custom CSS',
 				'type'        => 'css_editor',
 				'placeholder' => '/* Enter your custom CSS here */',
+			),
+			'iwp_hide_cta_button' => array(
+				'title' => 'Hide CTA Button',
+				'label' => 'Hide CTA Button on migration page',
+				'type' => 'checkbox',
+				'default' => '',
+			),
+			'iwp_enable_src_demo_url' => array(
+				'title' => 'Enable src_demo_url',
+				'label' => 'Append src_demo_url parameter to links in Main Content',
+				'type' => 'checkbox',
+				'default' => '',
 			),
 			'iwp_hide_migration_plugin' => array(
 				'title'   => 'Hide Migration Plugin',
