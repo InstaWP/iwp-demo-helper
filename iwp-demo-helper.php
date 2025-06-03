@@ -288,6 +288,12 @@ class IWP_Migration {
 				'type'    => 'wp_editor',
 				'default' => 'This a demo site, which you can migrate to your own hosting account in just one click. Click on the Migrate button and we will migrate it!',
 			),
+			'iwp_enable_src_demo_url' => array(
+				'title' => 'Append Source Demo URL',
+				'label' => 'Append src_demo_url parameter to links in Main Content',
+				'type' => 'checkbox',
+				'default' => '',
+			),
 			'title_text'                => array(
 				'title'   => 'Title Text',
 				'type'    => 'text',
@@ -302,6 +308,12 @@ class IWP_Migration {
 				'title'   => 'Brand Color',
 				'type'    => 'color_picker',
 				'default' => '#005e54',
+			),
+			'iwp_hide_cta_button' => array(
+				'title' => 'Hide CTA Button',
+				'label' => 'Hide CTA Button on migration page',
+				'type' => 'checkbox',
+				'default' => '',
 			),
 			'cta_btn_text'              => array(
 				'title'   => 'CTA Button - Text',
@@ -366,18 +378,6 @@ class IWP_Migration {
 				'title'       => 'Custom CSS',
 				'type'        => 'css_editor',
 				'placeholder' => '/* Enter your custom CSS here */',
-			),
-			'iwp_hide_cta_button' => array(
-				'title' => 'Hide CTA Button',
-				'label' => 'Hide CTA Button on migration page',
-				'type' => 'checkbox',
-				'default' => '',
-			),
-			'iwp_enable_src_demo_url' => array(
-				'title' => 'Enable src_demo_url',
-				'label' => 'Append src_demo_url parameter to links in Main Content',
-				'type' => 'checkbox',
-				'default' => '',
 			),
 			'iwp_hide_migration_plugin' => array(
 				'title'   => 'Hide Migration Plugin',
@@ -515,7 +515,7 @@ class IWP_Migration {
 			if ( ! empty( $options ) ) {
 				echo '<fieldset>';
 				foreach ( $options as $value => $label ) {
-					printf( '<label style="margin-right: 10px;"><input type="radio" name="%s" value="%s" %s /> %s</label>',
+					printf( '<label style="padding-right: 10px;"><input type="radio" name="%s" value="%s" %s /> %s</label>',
 						$field_id,
 						esc_attr( $value ),
 						checked( $field_value, $value, false ),
