@@ -2,11 +2,11 @@
 /*
 Plugin Name: InstaWP Demo Helper
 Description: A custom plugin to add a button with specific settings.
-Version: 1.0.5
+Version: 1.0.6
 Author: InstaWP Inc
 */
 
-defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.5' );
+defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.6' );
 
 class IWP_Migration {
 
