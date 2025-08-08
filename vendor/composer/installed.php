@@ -1,19 +1,19 @@
 <?php return array(
     'root' => array(
         'name' => 'instawp/migration',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '27187d08b89cffde9ab2f57d265042f8aa0a4751',
+        'pretty_version' => '1.0.0+no-version-set',
+        'version' => '1.0.0.0',
+        'reference' => null,
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'instawp/connect-helpers' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '7d59e8a9bf40d0bd81a9cabc69f28671d0a6c6d2',
+            'reference' => '21d10dc721b3e92621131a06e2ec6dbd813e7479',
             'type' => 'library',
             'install_path' => __DIR__ . '/../instawp/connect-helpers',
             'aliases' => array(
@@ -22,9 +22,9 @@
             'dev_requirement' => false,
         ),
         'instawp/migration' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '27187d08b89cffde9ab2f57d265042f8aa0a4751',
+            'pretty_version' => '1.0.0+no-version-set',
+            'version' => '1.0.0.0',
+            'reference' => null,
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

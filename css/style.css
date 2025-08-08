@@ -4,6 +4,25 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
+/* Enhanced error and warning message styles */
+.iwp-response-message.notice-warning {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+    padding: 12px 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+}
+
+.iwp-response-message.notice-error {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+    color: #721c24;
+    padding: 12px 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+}
+
 #wpadminbar .iwp_migration_class > a,
 #wpadminbar .iwp_migration_class > a:hover,
 #wpadminbar .iwp_migration_class > a:focus,
