@@ -1,11 +1,11 @@
 {
-    "name": "instawp/iwp-demo-helper",
+    "name": "instawp/migration",
     "description": "A custom plugin to add a button with specific settings",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
         {
-            "name": "InstaWP",
+            "name": "Vikas",
             "email": "vikas@instawp.com"
         }
     ],

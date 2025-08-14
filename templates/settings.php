@@ -79,6 +79,28 @@ if (isset($_POST['iwp_reset_settings']) && $_POST['iwp_reset_settings'] == '1') 
                     esc_attr($field_id), 
                     esc_attr($field_value)
                 );
+                
+                // Also handle linked fields for checkbox_with_field type
+                if ($field['type'] === 'checkbox_with_field' && isset($field['linked_field'])) {
+                    $linked_value = get_option($field['linked_field'], '');
+                    printf('<input type="hidden" name="%s" value="%s" />', 
+                        esc_attr($field['linked_field']), 
+                        esc_attr($linked_value)
+                    );
+                }
+                
+                // Also handle linked fields for checkbox_with_multiple_fields type
+                if ($field['type'] === 'checkbox_with_multiple_fields' && isset($field['linked_fields'])) {
+                    foreach ($field['linked_fields'] as $linked_field) {
+                        if (isset($linked_field['name'])) {
+                            $linked_value = get_option($linked_field['name'], '');
+                            printf('<input type="hidden" name="%s" value="%s" />', 
+                                esc_attr($linked_field['name']), 
+                                esc_attr($linked_value)
+                            );
+                        }
+                    }
+                }
             }
         }
         
