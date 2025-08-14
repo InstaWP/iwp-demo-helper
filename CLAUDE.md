@@ -174,7 +174,7 @@ Comprehensive error handling system with specific messages for different scenari
 - **Non-blocking 404s**: 404 errors show warning but allow migration to continue
 
 ### Remote Disable API
-**URL**: `/wp-json/iwp-migration/v1/disable`
+**URL**: `/wp-json/iwp-demo-helper/v1/disable`
 **Method**: POST
 **Authentication**: None (unauthenticated)
 **Purpose**: Remotely disable plugin functionality
@@ -358,7 +358,7 @@ Enhanced security measures for API key handling:
 
 ## Updates & Maintenance
 Auto-update system using `AutoUpdatePluginFromGitHub` class:
-- **Repository**: https://github.com/InstaWP/iwp-migration
+- **Repository**: https://github.com/InstaWP/iwp-demo-helper
 - **Version Check**: Automatic on plugin load
 - **Update Method**: GitHub releases
 
@@ -369,7 +369,7 @@ Auto-update system using `AutoUpdatePluginFromGitHub` class:
 - **Effect**: Completely disables all migration functionality
 
 ### Remote Disable API
-- **Endpoint**: `POST /wp-json/iwp-migration/v1/disable`
+- **Endpoint**: `POST /wp-json/iwp-demo-helper/v1/disable`
 - **Authentication**: None required (unauthenticated)
 - **Security**: Only allows enabling disable setting (one-way operation)
 

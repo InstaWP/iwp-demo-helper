@@ -29,13 +29,14 @@ https://www.youtube.com/watch?v=P52XQOCV3B8
 
 The plugin supports four different actions when the migration button is clicked:
 
-### 1. Open Link on Button Click (Override Action)
-- **Priority**: Highest - overrides all other actions
+### 1. Open Link on Button Click
+- **Priority**: Highest for redirection (but doesn't prevent API calls)
 - **Features**: 
-  - Direct redirection to custom URL
-  - Support for placeholders: `{{site_url}}`, `{{customer_email}}`, `{{site_id}}`
+  - Direct redirection to custom URL after other actions complete
+  - Support for placeholders: `{{site_url}}`, `{{customer_email}}`, `{{site_id}}`, `{{site_hash}}`
   - Option to open in new tab or current window
-- **Use Case**: Direct redirection to external systems
+  - Works alongside Convert Sandbox and Create Ticket actions
+- **Use Case**: Direct redirection to external systems after migration processing
 
 ### 2. Convert Sandbox to Regular Site
 - Makes API call to InstaWP to convert sandbox
@@ -70,7 +71,7 @@ Comprehensive error handling with specific messages for different scenarios:
 - **Network Errors**: "Network error: [specific error message]"
 
 ### Remote Disable
-- **Endpoint**: `POST /wp-json/iwp-migration/v1/disable`
+- **Endpoint**: `POST /wp-json/iwp-demo-helper/v1/disable`
 - **Authentication**: None required
 - **Purpose**: Remotely disable plugin functionality
 - **Effect**: Hides admin bar button and shows disabled message
@@ -165,7 +166,7 @@ Available placeholders:
 ## 💡 Pro Tips
 
 * **Hidden Menu Recovery**: If you've hidden the plugin menu, access it via `/wp-admin/admin.php?page=iwp_demo_helper`
-* **Action Priority**: "Open Link on Button Click" overrides all other actions when enabled
+* **Action Priority**: When multiple actions are enabled, API calls (Convert Sandbox/Create Ticket) execute first, then "Open Link" redirect happens last
 * **Immediate Redirect**: Enabling `Show Domain Choice & Redirect` redirects immediately after migration button click
 * **Domain Parameter**: Enabling `Show Domain Field` adds input that concatenates with redirection URL as `?domain=<value>`
 * **Remote Disable**: Use `POST /wp-json/iwp-demo-helper/v1/disable` to programmatically disable the plugin

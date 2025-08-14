@@ -94,7 +94,13 @@ class IWP_Migration {
 		);
 
 		if ( $type === 'request' && $request_data ) {
-			$log_entry['request_headers'] = isset( $request_data['headers'] ) ? $request_data['headers'] : array();
+			// Mask Authorization header if present
+			$headers = isset( $request_data['headers'] ) ? $request_data['headers'] : array();
+			if ( isset( $headers['Authorization'] ) && strpos( $headers['Authorization'], 'Bearer ' ) === 0 ) {
+				$api_key = substr( $headers['Authorization'], 7 ); // Remove 'Bearer ' prefix
+				$headers['Authorization'] = 'Bearer ' . self::mask_api_key( $api_key );
+			}
+			$log_entry['request_headers'] = $headers;
 			$log_entry['request_method'] = isset( $request_data['method'] ) ? $request_data['method'] : 'POST';
 			
 			// Sanitize sensitive data in request body
@@ -132,7 +138,7 @@ class IWP_Migration {
 	 * Register REST API endpoints
 	 */
 	function register_rest_api() {
-		register_rest_route( 'iwp-migration/v1', '/disable', array(
+		register_rest_route( 'iwp-demo-helper/v1', '/disable', array(
 			'methods'             => 'POST',
 			'callback'            => array( $this, 'api_disable_plugin' ),
 			'permission_callback' => '__return_true', // Unauthenticated access
@@ -202,32 +208,14 @@ class IWP_Migration {
 
 		$domain_name       = isset( $_POST['domain_name'] ) ? sanitize_text_field( $_POST['domain_name'] ) : '';
 		
-		// Check for the new "Open Link on Button Click" action first (it overrides all others)
+		// Check all actions
 		$open_link_action = get_option( 'iwp_open_link_action' ) === 'yes';
-		
-		if ( $open_link_action ) {
-			$open_link_url = get_option( 'iwp_open_link_url' );
-			if ( ! empty( $open_link_url ) ) {
-				$processed_url = $this->replace_placeholders( $open_link_url );
-				$open_in_new_tab = get_option( 'iwp_open_link_new_tab' ) === 'yes';
-				wp_send_json_success( array(
-					'open_link_action' => true,
-					'redirect_url' => $processed_url,
-					'open_new_tab' => $open_in_new_tab,
-					'message' => 'Redirecting to external link...'
-				));
-			} else {
-				wp_send_json_error( array( 'message' => 'Open link URL is not configured.' ) );
-			}
-		}
-		
-		// Check post-migration actions before making API calls
 		$convert_sandbox = get_option( 'iwp_convert_sandbox' ) === 'yes';
 		$show_domain_redirect = get_option( 'iwp_show_domain_field' ) === 'yes';
 		$create_ticket = get_option( 'iwp_create_ticket' ) === 'yes';
 		
 		// Only proceed if at least one action is enabled
-		if ( ! $convert_sandbox && ! $show_domain_redirect && ! $create_ticket ) {
+		if ( ! $open_link_action && ! $convert_sandbox && ! $show_domain_redirect && ! $create_ticket ) {
 			wp_send_json_error( [ 'message' => 'No migration actions are enabled. Please enable at least one option in the settings.' ] );
 		}
 		
@@ -236,6 +224,12 @@ class IWP_Migration {
 		$iwp_email_body    = get_option( 'iwp_email_body' );
 		$iwp_email_body    = empty( $iwp_email_body ) ? 'Sample email body' : $iwp_email_body;
 		$iwp_api_key       = get_option( 'iwp_api_key' );
+		
+		// Debug: Log the API key retrieval
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && get_option( 'iwp_debug_logging', '' ) ) {
+			error_log( '[IWP Demo Helper] DEBUG - API Key Retrieved: ' . ( empty($iwp_api_key) ? 'EMPTY' : 'Length=' . strlen($iwp_api_key) . ', Last4=' . substr($iwp_api_key, -4) ) );
+		}
+		
 		$iwp_api_domain    = defined('INSTAWP_API_DOMAIN' ) ? INSTAWP_API_DOMAIN : 'https://app.instawp.io';
 		
 		// Only make API call if convert_sandbox or create_ticket is enabled
@@ -382,11 +376,26 @@ class IWP_Migration {
 				$response_body['redirection_url'] = $redirection_url;
 			}
 		}
+		
+		// Handle open link action after all other processing
+		if ( $open_link_action ) {
+			$open_link_url = get_option( 'iwp_open_link_url' );
+			if ( ! empty( $open_link_url ) ) {
+				$processed_url = $this->replace_placeholders( $open_link_url );
+				$open_in_new_tab = get_option( 'iwp_open_link_new_tab' ) === 'yes';
+				$response_body['open_link_action'] = true;
+				$response_body['open_link_url'] = $processed_url;
+				$response_body['open_new_tab'] = $open_in_new_tab;
+				// If open_link is set, it takes precedence for the final redirect
+				$response_body['redirect_url'] = $processed_url;
+			}
+		}
 
 		$response_body['actions'] = array(
 			'convert_sandbox' => $convert_sandbox,
 			'show_domain_redirect' => $show_domain_redirect,
-			'create_ticket' => $create_ticket
+			'create_ticket' => $create_ticket,
+			'open_link_action' => $open_link_action
 		);
 		wp_send_json_success( $response_body );
 	}
@@ -434,9 +443,10 @@ class IWP_Migration {
 
 
 	function add_migrate_page() {
+		$title_text = IWP_Migration::get_option( 'title_text', 'Demo Helper' );
 		add_submenu_page(
 			'iwp_demo_helper_settings',
-			'IWP Migrate Content',
+			$title_text,
 			'Migrate Content',
 			'manage_options',
 			'iwp_demo_landing',

@@ -79,40 +79,52 @@
                 }
 
                 if (response.success) {
-                    // Handle the new "Open Link on Button Click" action (overrides all others)
-                    if (response.data.open_link_action && response.data.redirect_url) {
-                        if (response.data.open_new_tab) {
-                            window.open(response.data.redirect_url, '_blank');
-                        } else {
-                            window.location.href = response.data.redirect_url;
-                        }
-                        return;
-                    }
-
                     var actions = response.data.actions || {};
-
-                    // Handle redirect if Show Domain Choice & Redirect is enabled
-                    if (actions.show_domain_redirect && response.data.redirection_url && response.data.redirection_url !== '') {
-                        window.location.href = response.data.redirection_url;
-                        return;
-                    }
-
-                    // Check if there's an API warning message (like 404) to show before proceeding
-                    if (response.data.api_warning && response.data.api_status_code === 404) {
+                    
+                    // Check if there's an API warning message (like 404) to show
+                    var hasWarning = response.data.api_warning && response.data.api_status_code === 404;
+                    
+                    if (hasWarning) {
                         el_response_message.addClass('notice notice-warning').html(
                             '<strong>Notice:</strong> ' + response.data.message
                         );
+                    }
+                    
+                    // Function to handle redirect or show thank you
+                    var handleCompletion = function() {
+                        // Clear any warning messages
+                        el_response_message.removeClass('notice notice-warning').html('');
                         
-                        // Show the message for 3 seconds before proceeding to thank you screen
-                        setTimeout(function() {
-                            el_response_message.removeClass('notice notice-warning').html('');
-                            el_screen_content.addClass('hidden');
-                            el_screen_content_thankyou.removeClass('hidden');
-                        }, 3000);
-                    } else {
-                        // If no warning, show thank you screen immediately
+                        // Check for redirects in priority order
+                        // 1. Open link action takes highest priority if configured
+                        if (response.data.open_link_action && response.data.redirect_url) {
+                            if (response.data.open_new_tab) {
+                                window.open(response.data.redirect_url, '_blank');
+                                // Still show thank you screen when opening in new tab
+                                el_screen_content.addClass('hidden');
+                                el_screen_content_thankyou.removeClass('hidden');
+                            } else {
+                                window.location.href = response.data.redirect_url;
+                            }
+                            return;
+                        }
+                        
+                        // 2. Domain redirect if configured
+                        if (actions.show_domain_redirect && response.data.redirection_url && response.data.redirection_url !== '') {
+                            window.location.href = response.data.redirection_url;
+                            return;
+                        }
+                        
+                        // 3. Otherwise show thank you screen
                         el_screen_content.addClass('hidden');
                         el_screen_content_thankyou.removeClass('hidden');
+                    };
+                    
+                    // If there's a warning, delay the completion
+                    if (hasWarning) {
+                        setTimeout(handleCompletion, 3000);
+                    } else {
+                        handleCompletion();
                     }
                 }
             },
