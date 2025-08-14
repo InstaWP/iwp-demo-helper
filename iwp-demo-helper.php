@@ -223,7 +223,7 @@ class IWP_Migration {
 		
 		// Check post-migration actions before making API calls
 		$convert_sandbox = get_option( 'iwp_convert_sandbox' ) === 'yes';
-		$show_domain_redirect = get_option( 'iwp_show_domain_redirect' ) === 'yes';
+		$show_domain_redirect = get_option( 'iwp_show_domain_field' ) === 'yes';
 		$create_ticket = get_option( 'iwp_create_ticket' ) === 'yes';
 		
 		// Only proceed if at least one action is enabled
@@ -570,7 +570,7 @@ class IWP_Migration {
 			'iwp_open_link_action' => '', // Already '' (no)
 			'iwp_open_link_url' => '',
 			'iwp_open_link_new_tab' => '',
-			'iwp_show_domain_redirect' => '', // Already '' (no)
+			'iwp_show_domain_field' => '', // Already '' (no)
 			'iwp_domain_field_label' => '',
 			'iwp_redirection_url' => '',
 			'iwp_webhook_url' => '',
@@ -662,11 +662,11 @@ class IWP_Migration {
 				)
 			),
 
-			'iwp_show_domain_redirect' => array(
+			'iwp_show_domain_field' => array(
 				'title'   => 'Show Domain Choice & Redirect',
 				'label'   => 'Show domain input field and redirect after submission',
 				'type'    => 'checkbox_with_multiple_fields',
-				'default' => $defaults['iwp_show_domain_redirect'],
+				'default' => $defaults['iwp_show_domain_field'],
 				'tab'     => 'general',
 				'help'    => 'Display domain input field and redirect to specified URL after migration request.',
 				'linked_fields' => array(
@@ -692,7 +692,7 @@ class IWP_Migration {
 				'placeholder' => 'https://my-webhook-url.com',
 				'default'     => $defaults['iwp_webhook_url'],
 				'tab'         => 'general',
-				'help'        => 'Optional webhook URL to receive migration request data for integration with external systems.',
+				'help'        => 'Enter a webhook URL to send migration data to your external system (e.g., CRM, automation tool). The webhook will receive site URL, email, and domain information when migration is triggered.',
 			),
 			
 			// Content & Branding Tab
