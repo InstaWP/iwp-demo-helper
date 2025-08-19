@@ -1,13 +1,13 @@
 <?php
-/*
-Plugin Name: InstaWP Demo Helper
-Description: Enables one-click migration requests from demo WordPress sites. Adds a customizable migration button to the admin bar and provides a branded migration interface that connects to InstaWP's API for seamless site transfers. Perfect for hosting providers offering temporary demos with migration capabilities.
-Version: 1.0.7
-Author: InstaWP Inc
-Text Domain: iwp-demo-helper
-Domain Path: /languages
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+/** 
+* Plugin Name: InstaWP Demo Helper
+* Description: Enables one-click migration requests from demo WordPress sites. Adds a customizable migration button to the admin bar and provides a branded migration interface that connects to InstaWP's API for seamless site transfers. Perfect for hosting providers offering temporary demos with migration capabilities.
+* Version: 		1.0.7
+* Author: 		InstaWP Inc
+* Author URI:  	https://instawp.com
+* License: 		GPLv2 or later
+* License URI: 	https://www.gnu.org/licenses/gpl-2.0.html
+* Text Domain: 	iwp-demo-helper
 */
 
 defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.7' );
@@ -247,11 +247,11 @@ class IWP_Migration {
 				'customer_email' => get_option( 'admin_email' ),
 				'subject'        => $iwp_email_subject,
 				'body'           => $iwp_email_body,
-				'move_to_sites'  => $convert_sandbox,
 			);
 
 			if ( ! $convert_sandbox && ! empty( $expiry_hours ) ) {
 				$body_args['expiry_hours'] = (int) $expiry_hours;
+				$body_args['move_to_sites'] = false;
 			}
 
 			$headers  = array(
