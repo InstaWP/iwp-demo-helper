@@ -178,7 +178,7 @@ Available placeholders:
 
 ## 📋 Changelog
 
-### v1.0.7 - 08 Aug 2025 🆕
+### v1.0.7 - 19 August 2025 🆕
 **Added:**
 - Reset Settings functionality with JavaScript-based form handling
 - Centralized default values system using DRY principle
@@ -190,6 +190,7 @@ Available placeholders:
 - API key security enhancements - only last 4 characters visible, no show functionality
 - Request/response logging with WP_DEBUG integration and sensitive data masking
 - Export/Import settings functionality with JSON format and WP-CLI commands
+- Extend Site Expiry settings to allow extending site expiration.
 
 **Fixed:**
 - Reset button form nesting issues preventing proper form submission
