@@ -4,6 +4,10 @@ Plugin Name: InstaWP Demo Helper
 Description: Enables one-click migration requests from demo WordPress sites. Adds a customizable migration button to the admin bar and provides a branded migration interface that connects to InstaWP's API for seamless site transfers. Perfect for hosting providers offering temporary demos with migration capabilities.
 Version: 1.0.7
 Author: InstaWP Inc
+Text Domain: iwp-demo-helper
+Domain Path: /languages
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 */
 
 defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.7' );
@@ -213,9 +217,10 @@ class IWP_Migration {
 		$convert_sandbox = get_option( 'iwp_convert_sandbox' ) === 'yes';
 		$show_domain_redirect = get_option( 'iwp_show_domain_field' ) === 'yes';
 		$create_ticket = get_option( 'iwp_create_ticket' ) === 'yes';
+		$expiry_hours    = get_option( 'iwp_expiry_hours' );
 		
 		// Only proceed if at least one action is enabled
-		if ( ! $open_link_action && ! $convert_sandbox && ! $show_domain_redirect && ! $create_ticket ) {
+		if ( ! $open_link_action && ! $convert_sandbox && ! $show_domain_redirect && ! $create_ticket && empty( $expiry_hours ) ) {
 			wp_send_json_error( [ 'message' => 'No migration actions are enabled. Please enable at least one option in the settings.' ] );
 		}
 		
@@ -235,14 +240,19 @@ class IWP_Migration {
 		// Only make API call if convert_sandbox or create_ticket is enabled
 		$response_body = array( 'status' => true );
 		
-		if ( $convert_sandbox || $create_ticket ) {
+		if ( $convert_sandbox || $create_ticket || ! empty( $expiry_hours ) ) {
 			$body_args = array(
 				'url'            => site_url(),
 				'email'          => $create_ticket ? get_option( 'iwp_support_email' ) : '',
 				'customer_email' => get_option( 'admin_email' ),
 				'subject'        => $iwp_email_subject,
 				'body'           => $iwp_email_body,
+				'move_to_sites'  => $convert_sandbox,
 			);
+
+			if ( ! $convert_sandbox && ! empty( $expiry_hours ) ) {
+				$body_args['expiry_hours'] = (int) $expiry_hours;
+			}
 
 			$headers  = array(
 				'Accept'        => 'application/json',
@@ -575,6 +585,7 @@ class IWP_Migration {
 			// General Settings Tab
 			'iwp_api_key' => '',
 			'iwp_convert_sandbox' => 'yes',
+			'iwp_expiry_hours'          => '',
 			'iwp_create_ticket' => '', // Changed from 'yes' to '' (no)
 			'iwp_support_email' => '',
 			'iwp_open_link_action' => '', // Already '' (no)
@@ -636,6 +647,14 @@ class IWP_Migration {
 				'default' => $defaults['iwp_convert_sandbox'],
 				'tab'     => 'general',
 				'help'    => 'Automatically convert the sandbox to a regular site after migration request.',
+			),
+			'iwp_expiry_hours'          => array(
+				'title'       => 'Extend Site Expiry (in hours)',
+				'type'        => 'number',
+				'placeholder' => 'Enter expiry hours',
+				'default'     => $defaults['iwp_expiry_hours'],
+				'tab'         => 'general',
+				'help'        => 'Enter valid hours to extend site expiry.',
 			),
 			'iwp_create_ticket' => array(
 				'title'   => 'Create Support Ticket',
@@ -1023,6 +1042,10 @@ class IWP_Migration {
 
 		if ( $field_type === 'url' ) {
 			printf( '<input type="url" style="width: 380px;" name="%s" value="%s" placeholder="%s" />', $field_id, $field_value, $placeholder );
+		}
+
+		if ( $field_type === 'number' ) {
+			printf( '<input type="number" style="width: 380px;" name="%s" value="%s" placeholder="%s" />', $field_id, $field_value, $placeholder );
 		}
 
 		if ( $field_type === 'checkbox' ) {
