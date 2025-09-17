@@ -178,7 +178,11 @@ Available placeholders:
 
 ## 📋 Changelog
 
-### v1.0.7 - 19 August 2025 🆕
+### v1.0.8 - 17 September 2025 🆕
+**Fixed:**
+- Settings page to save and show updated values after saving.
+
+### v1.0.7 - 19 August 2025 
 **Added:**
 - Reset Settings functionality with JavaScript-based form handling
 - Centralized default values system using DRY principle
