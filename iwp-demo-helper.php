@@ -259,9 +259,11 @@ class IWP_Migration {
 				'body'           => $iwp_email_body,
 			);
 
-			if ( ! $convert_sandbox && ! empty( $expiry_hours ) ) {
-				$body_args['expiry_hours']  = (int) $expiry_hours;
-				$body_args['move_to_sites'] = false;
+			if ( ! empty( $expiry_hours ) ) {
+				$body_args['expiry_hours'] = (int) $expiry_hours;
+				if ( ! $convert_sandbox ) {
+					$body_args['move_to_sites'] = false;
+				}
 			}
 
 			$headers = array(
