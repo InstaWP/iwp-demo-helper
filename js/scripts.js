@@ -10,23 +10,6 @@
             localStorage.setItem('iwp_migration_current_tab', currentTab);
         }
 
-        // Conditional logic for expiry_hours
-        var convertSandboxCheckbox = $('input[name="iwp_convert_sandbox"]');
-        var expiryHoursRow = $('input[name="iwp_expiry_hours"]').closest('tr');
-
-        function toggleExpiryHours() {
-            if (convertSandboxCheckbox.is(':checked')) {
-                expiryHoursRow.hide();
-                $('input[name="iwp_expiry_hours"]').val('');
-            } else {
-                expiryHoursRow.show();
-            }
-        }
-
-        if (convertSandboxCheckbox.length) {
-            toggleExpiryHours();
-            convertSandboxCheckbox.on('change', toggleExpiryHours);
-        }
     });
 
     $(document).on('change', 'input.iwp-checkbox-with-field', function () {
