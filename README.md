@@ -178,6 +178,13 @@ Available placeholders:
 
 ## 📋 Changelog
 
+### v1.0.9 - 09 December 2025
+**Fixed:**
+- Resolved mobile responsiveness issue where "Go Live" button was hidden on mobile screens
+
+**Improved:**
+- Removed conditional toggle behavior - expiry hours field now displays regardless of "Convert Sandbox to Regular Site" setting
+
 ### v1.0.8 - 17 September 2025 🆕
 **Fixed:**
 - Settings page to save and show updated values after saving.

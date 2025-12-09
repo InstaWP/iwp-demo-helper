@@ -2,7 +2,7 @@
 /**
  * Plugin Name: InstaWP Demo Helper
  * Description: Enables one-click migration requests from demo WordPress sites. Adds a customizable migration button to the admin bar and provides a branded migration interface that connects to InstaWP's API for seamless site transfers. Perfect for hosting providers offering temporary demos with migration capabilities.
- * Version:      1.0.8
+ * Version:      1.0.9
  * Author:       InstaWP Inc
  * Author URI:   https://instawp.com
  * License:      GPLv2 or later
@@ -10,7 +10,7 @@
  * Text Domain:  iwp-demo-helper
  */
 
-defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.8' );
+defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.9' );
 
 class IWP_Migration {
 
@@ -1582,7 +1582,7 @@ class IWP_Migration {
 
 		// Add metadata
 		$export_data = array(
-			'plugin_version' => '1.0.7',
+			'plugin_version' => IWP_MIG_PLUGIN_VERSION,
 			'export_date'    => current_time( 'Y-m-d H:i:s' ),
 			'site_url'       => site_url(),
 			'settings'       => $settings,
@@ -1740,7 +1740,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
 			// Add metadata
 			$export_data = array(
-				'plugin_version' => '1.0.7',
+				'plugin_version' => IWP_MIG_PLUGIN_VERSION,
 				'export_date'    => current_time( 'Y-m-d H:i:s' ),
 				'site_url'       => site_url(),
 				'settings'       => $settings,
