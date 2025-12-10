@@ -573,7 +573,7 @@ class IWP_Migration {
 			'title' => esc_attr( get_option( 'top_bar_text', 'Migrate' ) ),
 			'href'  => admin_url( 'admin.php?page=iwp_demo_landing' ),
 			'meta'  => array(
-				'class' => 'menupop iwp_migration_class',
+				'class' => 'iwp_migration_class',
 			),
 		);
 
