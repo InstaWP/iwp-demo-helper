@@ -2,7 +2,7 @@
 /**
  * Plugin Name: InstaWP Demo Helper
  * Description: Enables one-click migration requests from demo WordPress sites. Adds a customizable migration button to the admin bar and provides a branded migration interface that connects to InstaWP's API for seamless site transfers. Perfect for hosting providers offering temporary demos with migration capabilities.
- * Version:      1.0.9
+ * Version:      1.1.0
  * Author:       InstaWP Inc
  * Author URI:   https://instawp.com
  * License:      GPLv2 or later
@@ -10,7 +10,7 @@
  * Text Domain:  iwp-demo-helper
  */
 
-defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.0.9' );
+defined( 'IWP_MIG_PLUGIN_VERSION' ) || define( 'IWP_MIG_PLUGIN_VERSION', '1.1.0' );
 
 class IWP_Migration {
 
@@ -438,8 +438,8 @@ class IWP_Migration {
 	function enqueue_scripts() {
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'wp-color-picker' );
-		wp_enqueue_style( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'css/style.css' );
-		wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ), time() );
+		wp_enqueue_style( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'css/style.css', array(), IWP_MIG_PLUGIN_VERSION );
+		wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ), IWP_MIG_PLUGIN_VERSION );
 		wp_localize_script(
 			'iwp-migration',
 			'iwp_migration',
@@ -573,7 +573,7 @@ class IWP_Migration {
 			'title' => esc_attr( get_option( 'top_bar_text', 'Migrate' ) ),
 			'href'  => admin_url( 'admin.php?page=iwp_demo_landing' ),
 			'meta'  => array(
-				'class' => 'menupop iwp_migration_class',
+				'class' => 'iwp_migration_class',
 			),
 		);
 
