@@ -438,8 +438,8 @@ class IWP_Migration {
 	function enqueue_scripts() {
 		wp_enqueue_style( 'wp-color-picker' );
 		wp_enqueue_script( 'wp-color-picker' );
-		wp_enqueue_style( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'css/style.css' );
-		wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ), time() );
+		wp_enqueue_style( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'css/style.css', array(), IWP_MIG_PLUGIN_VERSION );
+		wp_enqueue_script( 'iwp-migration', plugin_dir_url( __FILE__ ) . 'js/scripts.js', array( 'jquery' ), IWP_MIG_PLUGIN_VERSION );
 		wp_localize_script(
 			'iwp-migration',
 			'iwp_migration',
