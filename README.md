@@ -178,6 +178,10 @@ Available placeholders:
 
 ## 📋 Changelog
 
+### v1.1.0 - 10 December 2025
+**Fixed:**
+- "Go Live" button not clickable on small screens
+
 ### v1.0.9 - 09 December 2025
 **Fixed:**
 - Resolved mobile responsiveness issue where "Go Live" button was hidden on mobile screens
