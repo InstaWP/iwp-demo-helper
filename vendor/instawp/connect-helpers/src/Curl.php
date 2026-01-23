@@ -76,6 +76,13 @@ class Curl {
 			'max_redirects'   => 10,
 		);
 
+		/**
+		 *  If unset WordPress itself add user-agent.
+		 */
+		if ( empty( $args['user-agent'] ) ) {
+			unset( $args['user-agent'] );
+		}
+
 		if ( ! empty( $body ) ) {
 			$args['body'] = is_array( $body ) ? wp_json_encode( $body ) : $body;
 		}
@@ -95,6 +102,13 @@ class Curl {
 			if ( defined( 'INSTAWP_DEBUG_LOG' ) && INSTAWP_DEBUG_LOG ) {
 				error_log( 'Error - ' . $error_message );
 			}
+			Helper::add_error_log(
+				array(
+					'message' => $error_message,
+					'args'    => $body,
+					'api_url' => $api_url,
+				)
+			);
 
 			return array(
 				'success' => false,
@@ -108,6 +122,17 @@ class Curl {
 		$response_status  = Helper::get_args_option( 'status', $api_response );
 		$response_data    = Helper::get_args_option( 'data', $api_response, array() );
 		$response_message = Helper::get_args_option( 'message', $api_response );
+
+		if ( ! empty( $response_code ) && 400 <= intval( $response_code ) ) {
+			Helper::add_error_log(
+				array(
+					'api_url'       => $api_url,
+					'response_code' => $response_code,
+					'args'          => $body,
+					'response'      => $api_response,
+				)
+			);
+		}
 
 		return array(
 			'success' => $response_status,
