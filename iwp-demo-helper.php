@@ -20,6 +20,23 @@ class IWP_Migration {
 	public static $_settings_section = 'iwp_migration_main_section';
 	public static $_settings_group   = 'iwp_migration_settings_group';
 
+	/**
+	 * Seconds to wait for a concurrent WP_Upgrader run before refusing this one.
+	 * Bounded on purpose: a blocking wait would park the site's PHP workers.
+	 */
+	const UPGRADER_LOCK_TIMEOUT = 15;
+
+	/** @var resource|null Open handle holding the upgrader flock for this request. */
+	private static $upgrader_lock_handle = null;
+
+	/** @var int How many WP_Upgrader runs in this request are inside the lock. */
+	private static $upgrader_lock_depth = 0;
+
+	/** @var bool Set when the current run could not take the lock in time. */
+	private static $upgrader_lock_refused = false;
+
+	/** @var array|null Files present in the unpacked package, captured before it is moved into place. */
+	private static $upgrader_source_files = null;
 
 	public function __construct() {
 
@@ -41,6 +58,14 @@ class IWP_Migration {
 		add_filter( 'all_plugins', array( $this, 'remove_plugin_from_list' ) );
 		add_action( 'admin_bar_menu', array( $this, 'render_css_for_admin_bar_btn' ) );
 		add_filter( 'wp_redirect', array( $this, 'fix_settings_redirect' ), 10, 2 );
+
+		// Concurrent-upgrader guard, see upgrader_lock_acquire() below.
+		add_filter( 'upgrader_package_options', array( $this, 'upgrader_lock_acquire' ) );
+		add_filter( 'upgrader_pre_download', array( $this, 'upgrader_lock_refuse_download' ), 10, 4 );
+		add_action( 'upgrader_process_complete', array( $this, 'upgrader_lock_release' ), 999 );
+		add_filter( 'upgrader_source_selection', array( $this, 'upgrader_capture_source_files' ), 999, 4 );
+		add_filter( 'upgrader_post_install', array( $this, 'upgrader_verify_installed_files' ), 10, 3 );
+
 		$this->check_update();
 	}
 
@@ -1667,6 +1692,382 @@ class IWP_Migration {
 		}
 
 		wp_send_json_success( "Successfully imported {$imported_count} settings." );
+	}
+
+	/**
+	 * Takes a per-site lock so that only one WP_Upgrader run at a time unpacks a package.
+	 *
+	 * WP_Upgrader::unpack_package() empties the whole shared wp-content/upgrade/ directory
+	 * before extracting its own zip into it, and holds no lock while doing so. Two overlapping
+	 * runs on the same site therefore delete each other's working directory: whichever one is
+	 * between "unzip finished" and "move into place" ends up installing a half-extracted plugin,
+	 * which is then activated and fatals the site on every request. Demo sites reach this through
+	 * onboarding wizards that fire several POST /wp-json/wp/v2/plugins in parallel.
+	 *
+	 * This is hooked on the upgrader itself rather than on any one UI, so it covers the REST API,
+	 * wp-admin and WP-CLI alike. 'upgrader_package_options' is the only core hook that fires before
+	 * both the download and the unpack.
+	 *
+	 * The wait is bounded: with a small PHP-FPM pool a blocking flock would park the site's workers
+	 * and turn a slow install into an outage. A run that cannot get the lock in time is refused in
+	 * upgrader_lock_refuse_download() instead of racing.
+	 *
+	 * @param array $options WP_Upgrader::run() options.
+	 * @return array The options, unchanged.
+	 */
+	public function upgrader_lock_acquire( $options ) {
+
+		self::$upgrader_lock_refused = false;
+		self::$upgrader_source_files = null;
+
+		if ( ! apply_filters( 'iwp_demo_helper_upgrader_lock_enabled', true, $options ) ) {
+			return $options;
+		}
+
+		// Already held earlier in this same request (bulk runs, or a second run after the first finished).
+		if ( self::$upgrader_lock_depth > 0 ) {
+			++self::$upgrader_lock_depth;
+			return $options;
+		}
+
+		$lock_file = self::upgrader_lock_file();
+
+		if ( empty( $lock_file ) ) {
+			// Nowhere writable to put the lock. Fail open: an unserialised install is still
+			// better than no install, and upgrader_verify_installed_files() remains as a guard.
+			error_log( '[IWP Demo Helper] upgrader lock: no writable location for the lock file, continuing unserialised.' );
+			return $options;
+		}
+
+		$handle = @fopen( $lock_file, 'c' );
+
+		if ( ! $handle ) {
+			error_log( '[IWP Demo Helper] upgrader lock: could not open ' . $lock_file . ', continuing unserialised.' );
+			return $options;
+		}
+
+		$timeout  = (float) apply_filters( 'iwp_demo_helper_upgrader_lock_timeout', self::UPGRADER_LOCK_TIMEOUT, $options );
+		$deadline = microtime( true ) + max( 0, $timeout );
+		$acquired = false;
+
+		do {
+			if ( flock( $handle, LOCK_EX | LOCK_NB ) ) {
+				$acquired = true;
+				break;
+			}
+			usleep( 200000 ); // 0.2s
+		} while ( microtime( true ) < $deadline );
+
+		if ( ! $acquired ) {
+			fclose( $handle );
+			self::$upgrader_lock_refused = true;
+			error_log( sprintf( '[IWP Demo Helper] upgrader lock: another install or update is still running after %ss, refusing this one.', $timeout ) );
+			return $options;
+		}
+
+		self::$upgrader_lock_handle = $handle;
+		self::$upgrader_lock_depth  = 1;
+
+		// A fatal or a killed request must not strand the lock for the rest of the request.
+		add_action( 'shutdown', array( __CLASS__, 'upgrader_lock_release_all' ), 0 );
+
+		return $options;
+	}
+
+	/**
+	 * Refuses a run that could not take the lock, before anything is downloaded or unpacked.
+	 *
+	 * 'upgrader_package_options' cannot short-circuit the run (its return value is used as the
+	 * options array), so the refusal is carried to the next hook that can. A refused install the
+	 * caller retries is strictly better than a corrupted one it activates.
+	 *
+	 * @param bool|WP_Error $reply      Short-circuit value, false to continue with the download.
+	 * @param string        $package    The package being installed.
+	 * @param WP_Upgrader   $upgrader   The upgrader instance.
+	 * @param array         $hook_extra Extra arguments.
+	 * @return bool|WP_Error
+	 */
+	public function upgrader_lock_refuse_download( $reply, $package = '', $upgrader = null, $hook_extra = array() ) {
+
+		if ( false !== $reply ) {
+			return $reply;
+		}
+
+		if ( ! self::$upgrader_lock_refused ) {
+			return $reply;
+		}
+
+		self::$upgrader_lock_refused = false;
+
+		return new WP_Error(
+			'iwp_upgrader_busy',
+			'Another plugin or theme install is already running on this site. Please try again in a moment.'
+		);
+	}
+
+	/**
+	 * Releases the lock at the end of a WP_Upgrader run.
+	 *
+	 * @param WP_Upgrader|null $upgrader The upgrader instance (unused).
+	 * @return void
+	 */
+	public function upgrader_lock_release( $upgrader = null ) {
+
+		if ( self::$upgrader_lock_depth > 1 ) {
+			--self::$upgrader_lock_depth;
+			return;
+		}
+
+		self::upgrader_lock_release_all();
+	}
+
+	/**
+	 * Drops the lock unconditionally. Also runs on 'shutdown'.
+	 *
+	 * @return void
+	 */
+	public static function upgrader_lock_release_all() {
+
+		if ( is_resource( self::$upgrader_lock_handle ) ) {
+			flock( self::$upgrader_lock_handle, LOCK_UN );
+			fclose( self::$upgrader_lock_handle );
+		}
+
+		self::$upgrader_lock_handle = null;
+		self::$upgrader_lock_depth  = 0;
+	}
+
+	/**
+	 * Resolves the lock file path.
+	 *
+	 * Deliberately not wp-content/upgrade/: unpack_package() empties that directory, and a lock
+	 * file that can be deleted and recreated underneath a waiting process stops being a lock.
+	 * The uploads directory is writable by the web user and inside open_basedir on our hosts.
+	 *
+	 * @return string Absolute path, or an empty string if nowhere is writable.
+	 */
+	private static function upgrader_lock_file() {
+
+		$candidates = array();
+		$uploads    = wp_upload_dir( null, false );
+
+		if ( is_array( $uploads ) && empty( $uploads['error'] ) && ! empty( $uploads['basedir'] ) ) {
+			$candidates[] = $uploads['basedir'];
+		}
+
+		$candidates[] = WP_CONTENT_DIR;
+		$candidates[] = get_temp_dir();
+
+		foreach ( $candidates as $dir ) {
+			$dir = rtrim( (string) $dir, '/\\' );
+
+			if ( '' !== $dir && is_dir( $dir ) && is_writable( $dir ) ) {
+				return $dir . '/.iwp-demo-helper-upgrader.lock';
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Records what the unpacked package contains, while it is still on disk.
+	 *
+	 * By the time 'upgrader_post_install' runs the source is gone — a plugin install is a
+	 * move_dir() (an atomic rename) followed by the working directory being cleared — so the
+	 * only way to tell a complete install from a truncated one is to have counted the files
+	 * beforehand. 'upgrader_source_selection' fires immediately after the unpack, which is the
+	 * start of the window a competing unpack_package() can delete files in.
+	 *
+	 * @param string|WP_Error $source        Selected source directory.
+	 * @param string          $remote_source Unpacked working directory.
+	 * @param WP_Upgrader     $upgrader      The upgrader instance.
+	 * @param array           $hook_extra    Extra arguments.
+	 * @return string|WP_Error The source, unchanged.
+	 */
+	public function upgrader_capture_source_files( $source, $remote_source = '', $upgrader = null, $hook_extra = array() ) {
+
+		self::$upgrader_source_files = null;
+
+		if ( is_wp_error( $source ) || ! is_string( $source ) || '' === $source ) {
+			return $source;
+		}
+
+		$type = isset( $hook_extra['type'] ) ? $hook_extra['type'] : '';
+
+		if ( 'plugin' !== $type && 'theme' !== $type ) {
+			return $source;
+		}
+
+		self::$upgrader_source_files = self::upgrader_file_list( $source );
+
+		return $source;
+	}
+
+	/**
+	 * Refuses an install whose files did not all make it into the destination.
+	 *
+	 * WP_Upgrader::run() does not remove the destination when this filter returns a WP_Error, so a
+	 * partial directory would be left exactly where a wizard's "is it installed?" search finds it,
+	 * and a retry would then fail with folder_exists rather than overwrite it. For an install we
+	 * therefore delete what landed; for an update we only report the error and let WordPress
+	 * restore its own temp backup, since deleting there would remove a working plugin.
+	 *
+	 * @param bool|WP_Error $response   Installation response so far.
+	 * @param array         $hook_extra Extra arguments.
+	 * @param array         $result     Installation result data.
+	 * @return bool|WP_Error
+	 */
+	public function upgrader_verify_installed_files( $response, $hook_extra = array(), $result = array() ) {
+
+		$expected                    = self::$upgrader_source_files;
+		self::$upgrader_source_files = null;
+
+		if ( is_wp_error( $response ) || empty( $expected ) || ! is_array( $result ) ) {
+			return $response;
+		}
+
+		$destination = isset( $result['remote_destination'] ) ? $result['remote_destination'] : '';
+
+		if ( ! is_string( $destination ) || '' === $destination ) {
+			return $response;
+		}
+
+		$installed = self::upgrader_file_list( $destination );
+
+		if ( null === $installed ) {
+			// Could not read the destination back. Don't guess; leave the result alone.
+			return $response;
+		}
+
+		$missing = array_values( array_diff( $expected, $installed ) );
+
+		/*
+		 * move_dir() falls back to copy_dir() with the destination's own name as a skip list when
+		 * the rename fails, so a package containing a top-level entry named after its own folder
+		 * is legitimately absent from the destination. Never treat that as corruption.
+		 */
+		$self_named = basename( untrailingslashit( $destination ) );
+
+		if ( '' !== $self_named ) {
+			$missing = array_values(
+				array_filter(
+					$missing,
+					static function ( $path ) use ( $self_named ) {
+						return $path !== $self_named && 0 !== strpos( $path, $self_named . '/' );
+					}
+				)
+			);
+		}
+
+		if ( empty( $missing ) ) {
+			return $response;
+		}
+
+		$removed = self::upgrader_remove_partial_install( $destination, $hook_extra );
+
+		error_log(
+			sprintf(
+				'[IWP Demo Helper] refused a partial install of %s: %d of %d entries missing (first: %s). Partial directory %s.',
+				$destination,
+				count( $missing ),
+				count( $expected ),
+				implode( ', ', array_slice( $missing, 0, 5 ) ),
+				$removed ? 'removed' : 'left in place'
+			)
+		);
+
+		return new WP_Error(
+			'iwp_incomplete_package',
+			sprintf(
+				'The package was only partially extracted (%d of %d files are missing), most likely because another install was running at the same time. Nothing was activated; please try again.',
+				count( $missing ),
+				count( $expected )
+			)
+		);
+	}
+
+	/**
+	 * Removes a half-installed plugin or theme directory.
+	 *
+	 * Only for a fresh install, and only when the destination really is one level under a plugin
+	 * or theme directory — anything else is left alone rather than guessed at.
+	 *
+	 * @param string $destination Destination directory as WP_Filesystem sees it.
+	 * @param array  $hook_extra  Extra arguments.
+	 * @return bool Whether the directory was removed.
+	 */
+	private static function upgrader_remove_partial_install( $destination, $hook_extra ) {
+
+		global $wp_filesystem, $wp_theme_directories;
+
+		$action = isset( $hook_extra['action'] ) ? $hook_extra['action'] : '';
+
+		if ( 'install' !== $action || ! $wp_filesystem ) {
+			return false;
+		}
+
+		$destination = untrailingslashit( $destination );
+		$parents     = array( untrailingslashit( WP_PLUGIN_DIR ), untrailingslashit( WP_CONTENT_DIR . '/themes' ) );
+
+		if ( ! empty( $wp_theme_directories ) && is_array( $wp_theme_directories ) ) {
+			foreach ( $wp_theme_directories as $theme_directory ) {
+				$parents[] = untrailingslashit( $theme_directory );
+			}
+		}
+
+		if ( '' === basename( $destination ) || ! in_array( dirname( $destination ), $parents, true ) ) {
+			return false;
+		}
+
+		return (bool) $wp_filesystem->delete( $destination, true );
+	}
+
+	/**
+	 * Lists every entry under a directory, relative to it, directories included.
+	 *
+	 * @param string $directory Directory to list.
+	 * @return array|null Sorted relative paths, or null if the directory could not be read.
+	 */
+	private static function upgrader_file_list( $directory ) {
+
+		global $wp_filesystem;
+
+		if ( ! $wp_filesystem ) {
+			return null;
+		}
+
+		$listing = $wp_filesystem->dirlist( trailingslashit( $directory ), true, true );
+
+		if ( ! is_array( $listing ) ) {
+			return null;
+		}
+
+		$files = array();
+		self::upgrader_flatten_dirlist( $listing, '', $files );
+		sort( $files );
+
+		return $files;
+	}
+
+	/**
+	 * Flattens a recursive WP_Filesystem::dirlist() into relative paths.
+	 *
+	 * @param array  $entries Nested dirlist.
+	 * @param string $prefix  Path prefix for this level.
+	 * @param array  $files   Collected paths, by reference.
+	 * @return void
+	 */
+	private static function upgrader_flatten_dirlist( $entries, $prefix, &$files ) {
+
+		foreach ( $entries as $name => $details ) {
+			$path    = $prefix . $name;
+			$is_dir  = isset( $details['type'] ) && 'd' === $details['type'];
+			$files[] = $is_dir ? $path . '/' : $path;
+
+			if ( $is_dir && ! empty( $details['files'] ) && is_array( $details['files'] ) ) {
+				self::upgrader_flatten_dirlist( $details['files'], $path . '/', $files );
+			}
+		}
 	}
 
 	public static function instance() {
