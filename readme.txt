@@ -2,9 +2,9 @@
 Contributors: instawp
 Tags: migration, demo, sandbox, instawp, hosting
 Requires at least: 5.6
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -110,6 +110,10 @@ Use the "Export Settings" button in the Advanced tab to download a JSON file wit
 6. Advanced settings with export/import
 
 == Changelog ==
+
+= 1.1.2 - 30 September 2026 =
+**Fixed:**
+* Deactivating a plugin from the InstaWP dashboard no longer fails with a critical error when InstaWP Connect is also active
 
 = 1.1.1 - 23 January 2026 =
 **Fixed:**
