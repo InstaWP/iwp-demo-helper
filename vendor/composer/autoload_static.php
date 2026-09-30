@@ -11,14 +11,14 @@ class ComposerStaticInit00ccb8e5518e2d9edd84466a5c33f7c4
     );
 
     public static $prefixLengthsPsr4 = array (
-        'I' => 
+        'I' =>
         array (
             'InstaWP\\Connect\\Helpers\\' => 24,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'InstaWP\\Connect\\Helpers\\' => 
+        'InstaWP\\Connect\\Helpers\\' =>
         array (
             0 => __DIR__ . '/..' . '/instawp/connect-helpers/src',
         ),

@@ -28,6 +28,7 @@
         ]
     },
     "config": {
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "prepend-autoloader": false
     }
 }
