@@ -4,7 +4,7 @@ Tags: migration, demo, sandbox, instawp, hosting
 Requires at least: 5.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -110,6 +110,10 @@ Use the "Export Settings" button in the Advanced tab to download a JSON file wit
 6. Advanced settings with export/import
 
 == Changelog ==
+
+= 1.1.3 - 16 November 2026 =
+**Updated:**
+* Bundled connect-helpers library updated to 1.1.4
 
 = 1.1.2 - 30 September 2026 =
 **Fixed:**
